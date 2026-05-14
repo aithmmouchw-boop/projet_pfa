@@ -1,0 +1,79 @@
+{% extends "auth/base_auth.html" %}
+
+{% block auth_title %}Connexion{% endblock %}
+
+{% block auth_main %}
+<div class="auth-mobile-icon" aria-hidden="true">
+  <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M16 4v24M10 8c0 4 3 6 6 6s6-2 6-6M10 24c0-4 3-6 6-6s6 2 6 6" stroke="var(--accent-moss)" stroke-width="1.2" stroke-linecap="round"/>
+    <circle cx="16" cy="16" r="2" fill="var(--accent-moss)"/>
+  </svg>
+</div>
+<p class="auth-kicker">Espace Professionnel</p>
+<h1 class="auth-h1">Bon retour.</h1>
+<p class="auth-sub">Connectez-vous à votre espace Aesculia.</p>
+
+<form method="post" action="{% url 'auth:login' %}" class="auth-form{% if form.errors %} auth-form--error{% endif %}" id="auth-login-form" data-auth-form novalidate>
+  {% csrf_token %}
+  {% if form.non_field_errors %}
+  <div class="auth-error" role="alert">
+    <span class="auth-error__ico" aria-hidden="true">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v5M12 16h.01"/></svg>
+    </span>
+    <span>Identifiants incorrects. Veuillez réessayer.</span>
+  </div>
+  {% endif %}
+
+  <div class="field-group field-group--float">
+    <label class="field-label" for="{{ form.username.id_for_label }}">Adresse e-mail</label>
+    <div class="input-wrapper">
+      <span class="input-ico" aria-hidden="true">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="m22 6-10 7L2 6"/></svg>
+      </span>
+      {{ form.username }}
+    </div>
+    {% if form.username.errors %}<p class="field-error">{{ form.username.errors.0 }}</p>{% endif %}
+  </div>
+
+  <div class="field-group field-group--float">
+    <label class="field-label" for="{{ form.password.id_for_label }}">Mot de passe</label>
+    <div class="input-wrapper">
+      <span class="input-ico" aria-hidden="true">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      </span>
+      {{ form.password }}
+      <button type="button" class="input-toggle-pw" aria-label="Afficher le mot de passe" data-toggle-password tabindex="-1">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+      </button>
+    </div>
+    {% if form.password.errors %}<p class="field-error">{{ form.password.errors.0 }}</p>{% endif %}
+  </div>
+
+  <div class="auth-options">
+    <label class="auth-check">
+      <input type="checkbox" name="remember" value="1" class="auth-check__input">
+      <span class="auth-check__box" aria-hidden="true">
+        <svg class="auth-check__tick" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>
+      </span>
+      <span class="auth-check__label">Se souvenir de moi</span>
+    </label>
+    <a class="auth-link-muted" href="{% url 'auth:password_reset' %}">Mot de passe oublié ?</a>
+  </div>
+
+  <button type="submit" class="btn-login" data-login-submit>
+    <span class="btn-login__text">Se connecter</span>
+    <span class="btn-login__loading" hidden>Connexion en cours…</span>
+    <span class="btn-login__ico btn-login__ico--arrow" aria-hidden="true">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </span>
+    <span class="btn-login__ico btn-login__ico--spin" hidden aria-hidden="true">
+      <svg width="18" height="18" viewBox="0 0 24 24" class="auth-spinner"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="44" stroke-linecap="round"/></svg>
+    </span>
+  </button>
+</form>
+
+<div class="auth-divider" role="presentation"></div>
+<p class="auth-footnote">Vous êtes patient ? <a class="auth-link-accent" href="{% url 'landing' %}#hero">Prendre rendez-vous <span aria-hidden="true">→</span></a></p>
+
+<p class="auth-legal">© {% now "Y" %} AESCULIA · Mentions légales · Politique de confidentialité</p>
+{% endblock %}

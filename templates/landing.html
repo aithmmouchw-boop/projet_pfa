@@ -1,0 +1,463 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ clinic.name }} — {{ clinic.tagline|default:"Là où la médecine rencontre l'excellence." }}{% endblock %}
+
+{% block meta_description %}Aesculia — Clinique privée d'excellence. Médecins certifiés, soins personnalisés, prise de RDV en ligne.{% endblock %}
+
+{% block og_meta %}
+<meta property="og:title" content="AESCULIA">
+<meta property="og:description" content="Là où la médecine rencontre l'excellence.">
+<meta property="og:type" content="website">
+{% endblock %}
+
+{% block body_class %}aesculia aesculia--ivory{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/landing.css' %}">
+{% endblock %}
+
+{% block content %}
+<div id="page-loader-bar" class="page-loader-bar" aria-hidden="true"></div>
+<a href="#contenu-principal" class="skip-link">Aller au contenu</a>
+
+<header class="aes-header" id="aes-header">
+  <div class="aes-header__inner">
+    <a class="aes-brand" href="{% url 'landing' %}" aria-label="{{ clinic.name }} — Accueil">
+      <span class="aes-brand__mark" aria-hidden="true">
+        <svg width="26" height="26" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M16 4v24M10 8c0 4 3 6 6 6s6-2 6-6M10 24c0-4 3-6 6-6s6 2 6 6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+          <circle cx="16" cy="16" r="2" fill="currentColor"/>
+        </svg>
+      </span>
+      <span class="aes-brand__word">{{ clinic.name|default:"AESCULIA" }}</span>
+    </a>
+
+    <button type="button" class="aes-nav-toggle" id="aes-nav-toggle" aria-expanded="false" aria-controls="aes-nav-overlay" aria-label="Ouvrir le menu">
+      <span></span><span></span><span></span>
+    </button>
+
+    <nav class="aes-nav" aria-label="Navigation principale">
+      <ul class="aes-nav__list">
+        <li><a href="#hero" data-nav-section="hero">Accueil</a></li>
+        <li><a href="#soins" data-nav-section="soins">Soins</a></li>
+        <li><a href="#medecins" data-nav-section="medecins">Médecins</a></li>
+        <li><a href="#parcours" data-nav-section="parcours">Parcours</a></li>
+        <li><a href="#a-propos" data-nav-section="a-propos">À propos</a></li>
+        <li><a href="#temoignages" data-nav-section="temoignages">Témoignages</a></li>
+        <li><a href="#contact" data-nav-section="contact">Contact</a></li>
+      </ul>
+      <div class="aes-nav__actions">
+        <div class="aes-lang" role="group" aria-label="Langue">
+          <a href="#" class="aes-lang__link is-active" aria-current="true">FR</a>
+          <span class="aes-lang__sep" aria-hidden="true">|</span>
+          <a href="#" class="aes-lang__link">EN</a>
+        </div>
+        {% if portal_dashboard_url %}
+          <a class="aes-btn aes-btn--header aes-btn--header-ghost" href="{{ portal_dashboard_url }}">{{ portal_label }}</a>
+        {% else %}
+          <a class="aes-btn aes-btn--header aes-btn--header-ghost" href="{% url 'auth:login' %}">Connexion</a>
+        {% endif %}
+        <a class="aes-btn aes-btn--header" href="{% url 'appointments:create' %}">Prendre RDV</a>
+      </div>
+    </nav>
+  </div>
+
+  <div class="aes-nav-overlay" id="aes-nav-overlay" hidden>
+    <div class="aes-nav-overlay__panel">
+      <ul class="aes-nav-overlay__list">
+        <li><a href="#hero" data-nav-section="hero">Accueil</a></li>
+        <li><a href="#soins" data-nav-section="soins">Soins</a></li>
+        <li><a href="#medecins" data-nav-section="medecins">Médecins</a></li>
+        <li><a href="#parcours" data-nav-section="parcours">Parcours</a></li>
+        <li><a href="#a-propos" data-nav-section="a-propos">À propos</a></li>
+        <li><a href="#temoignages" data-nav-section="temoignages">Témoignages</a></li>
+        <li><a href="#contact" data-nav-section="contact">Contact</a></li>
+      </ul>
+      <a class="aes-btn aes-btn--header aes-btn--block" href="{% url 'appointments:create' %}">Prendre RDV</a>
+      <div class="aes-nav-overlay__auth">
+        {% if portal_dashboard_url %}
+          <a class="aes-btn aes-btn--header-ghost aes-btn--block aes-btn--sq" href="{{ portal_dashboard_url }}">{{ portal_label }}</a>
+        {% else %}
+          <a class="aes-btn aes-btn--header-ghost aes-btn--block aes-btn--sq" href="{% url 'auth:login' %}">Connexion</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</header>
+
+<main id="contenu-principal">
+  {# —— Hero 50/50 —— #}
+  <section class="aes-hero" id="hero" aria-labelledby="aes-hero-heading">
+    <div class="aes-hero__split">
+      <div class="aes-hero__left" data-hero-stagger>
+        <p class="aes-hero__crumb">Clinique privée d'excellence</p>
+        <h1 id="aes-hero-heading" class="aes-hero__h1">
+          <span class="aes-hero__h1-line">L'Art de Prendre</span>
+          <span class="aes-hero__h1-line"><em class="aes-hero__h1-accent">Soin.</em></span>
+        </h1>
+        <p class="aes-hero__tag">{{ clinic.tagline }}</p>
+        <p class="aes-hero__tag2">{{ clinic.subtagline }}</p>
+        <div class="aes-hero__ctas">
+          <a class="aes-btn aes-btn--moss" href="{% url 'appointments:create' %}">Prendre Rendez-vous</a>
+          <a class="aes-btn aes-btn--outline" href="#soins">Découvrir Aesculia</a>
+        </div>
+        <div class="aes-hero__trust" role="list">
+          <span role="listitem"><span class="aes-hero__star" aria-hidden="true">✦</span> Médecins certifiés</span>
+          <span class="aes-hero__trust-bar" aria-hidden="true"></span>
+          <span role="listitem"><span class="aes-hero__star" aria-hidden="true">✦</span> Soins personnalisés</span>
+          <span class="aes-hero__trust-bar" aria-hidden="true"></span>
+          <span role="listitem"><span class="aes-hero__star" aria-hidden="true">✦</span> 6j/7</span>
+        </div>
+      </div>
+
+      <div class="aes-hero__right" data-hero-panel>
+        <div class="aes-hero__image" data-parallax="hero-right" style="background-image: url('https://images.unsplash.com/photo-1551190822-a9333d879b1f?w=900&q=85');"></div>
+        <div class="aes-hero__image-grad" aria-hidden="true"></div>
+
+        <div class="aes-hero__badge" aria-label="Distinction">
+          <span class="aes-hero__badge-star" aria-hidden="true">★</span>
+          <span class="aes-hero__badge-text">Excellence<br>{% now "Y" %}</span>
+        </div>
+
+        <div class="aes-hero__card hero-appointment-card" data-float-card>
+          <p class="aes-hero__card-label">Votre prochain rendez-vous</p>
+          {% if featured_doctor %}
+          <div class="aes-hero__card-avatar">
+            {% if featured_doctor.photo %}
+            <img src="{{ featured_doctor.photo.url }}" alt="" width="50" height="50" loading="eager" decoding="async" onerror="this.style.display='none'">
+            {% else %}
+            <span class="aes-hero__card-initials">{{ featured_doctor.initials|default:"AE" }}</span>
+            {% endif %}
+          </div>
+          <p class="aes-hero__card-name">Dr. {{ featured_doctor.nom }}</p>
+          <p class="aes-hero__card-spec">{{ featured_doctor.specialite }}</p>
+          {% else %}
+          <div class="aes-hero__card-avatar aes-hero__card-avatar--empty" aria-hidden="true"></div>
+          <p class="aes-hero__card-name">—</p>
+          <p class="aes-hero__card-spec">Contexte : <code>featured_doctor</code></p>
+          {% endif %}
+
+          <p class="aes-hero__card-slots-h">Prochains créneaux</p>
+          <div class="aes-hero__card-slots">
+            {% for slot in hero_slots %}
+            <button type="button" class="aes-slot" data-slot>{{ slot }}</button>
+            {% endfor %}
+          </div>
+          <a class="aes-btn aes-btn--moss aes-btn--wide aes-btn--sq" href="{% url 'appointments:create' %}">Réserver ce créneau</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="scroll-indicator" aria-hidden="true">
+      <div class="scroll-line"></div>
+      <span class="scroll-text">SCROLL POUR DÉCOUVRIR</span>
+    </div>
+  </section>
+
+  {# —— Cinéma réel —— #}
+  <section class="aes-reel" id="philosophie" aria-labelledby="aes-reel-title" data-reveal>
+    <div class="aes-reel__inner">
+      <div class="aes-reel__strip" data-parallax="reel-strip">
+        <div class="aes-reel__col aes-reel__col--1">
+          <img src="https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=600&q=80" alt="" loading="lazy" decoding="async" width="600" height="900" data-parallax-child="-0.2" onerror="this.style.display='none'">
+        </div>
+        <div class="aes-reel__col aes-reel__col--2">
+          <img src="https://images.unsplash.com/photo-1530026186672-2cd00ffc50fe?w=600&q=80" alt="" loading="lazy" decoding="async" width="600" height="720" data-parallax-child="-0.2" onerror="this.style.display='none'">
+        </div>
+        <div class="aes-reel__col aes-reel__col--3">
+          <img src="https://images.unsplash.com/photo-1551601651-2a8555f1a136?w=600&q=80" alt="" loading="lazy" decoding="async" width="600" height="900" data-parallax-child="-0.2" onerror="this.style.display='none'">
+        </div>
+      </div>
+      <div class="aes-reel__overlay">
+        <h2 id="aes-reel-title" class="visually-hidden">Philosophie</h2>
+        <div class="aes-reel__card">
+          <p class="aes-reel__quote">Une clinique qui pense à vous.</p>
+          <p class="aes-reel__sub">Des soins d'exception dans un cadre conçu pour votre bien-être.</p>
+          <a class="aes-reel__link" href="#soins">Notre philosophie <span aria-hidden="true">→</span></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {# —— Stats forêt —— #}
+  <section class="aes-stats" id="stats" aria-label="Chiffres clés" data-reveal>
+    <div class="aes-stats__inner">
+      <div class="aes-stat">
+        <div class="aes-stat__num"><span class="js-counter" data-target="{{ stats.patients_count|default:0 }}">0</span><span class="aes-stat__plus">+</span></div>
+        <p class="aes-stat__label">Patients accompagnés</p>
+      </div>
+      <div class="aes-stat__rule" aria-hidden="true"></div>
+      <div class="aes-stat">
+        <div class="aes-stat__num"><span class="js-counter" data-target="{{ stats.doctors_count|default:0 }}">0</span></div>
+        <p class="aes-stat__label">Médecins spécialistes</p>
+      </div>
+      <div class="aes-stat__rule" aria-hidden="true"></div>
+      <div class="aes-stat">
+        <div class="aes-stat__num"><span class="js-counter" data-target="{{ stats.years|default:0 }}">0</span></div>
+        <p class="aes-stat__label">Années d'excellence</p>
+      </div>
+      <div class="aes-stat__rule" aria-hidden="true"></div>
+      <div class="aes-stat">
+        <div class="aes-stat__num"><span class="js-counter" data-target="{{ stats.consultations_per_day|default:0 }}">0</span></div>
+        <p class="aes-stat__label">Consultations / jour</p>
+      </div>
+    </div>
+  </section>
+
+  {# —— Soins —— #}
+  <section class="aes-soins" id="soins" aria-labelledby="aes-soins-h2" data-reveal>
+    <div class="aes-soins__layout">
+      <div class="aes-soins__sticky">
+        <p class="aes-soins__label">Nos soins</p>
+        <span class="aes-soins__deco" aria-hidden="true"></span>
+        <h2 id="aes-soins-h2" class="aes-soins__h2">Nos Spécialités</h2>
+        <p class="aes-soins__desc">Une palette complète de disciplines médicales, orchestrée pour votre confort et votre santé à long terme.</p>
+        <a class="aes-soins__link" href="#contact">Voir tous les soins <span aria-hidden="true">→</span></a>
+      </div>
+      <div class="aes-soins__grid">
+        {% for service in services %}
+        <article class="aes-service">
+          <div class="aes-service__icon" aria-hidden="true">
+            {% if forloop.counter0 == 0 %}
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/><path d="M8 12h2l2 3 2-6 2 4h2"/></svg>
+            {% elif forloop.counter0 == 1 %}
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            {% elif forloop.counter0 == 2 %}
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25"><path d="M12 8c-2 2-4 3-4 5a4 4 0 0 0 8 0c0-2-2-3-4-5z"/><circle cx="12" cy="5" r="1.5" fill="currentColor" stroke="none"/></svg>
+            {% else %}
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25"><circle cx="12" cy="9" r="3.5"/><path d="M6.5 20v-.5a4 4 0 0 1 4-4h3a4 4 0 0 1 4 4v.5"/></svg>
+            {% endif %}
+          </div>
+          <h3 class="aes-service__name">{{ service.name }}</h3>
+          <p class="aes-service__text">{% firstof service.short_description service.description "" %}</p>
+          <a href="{% url 'appointments:create' %}?service={{ service.pk|default:service.id }}" class="aes-service__link">Découvrir <span class="aes-service__arrow" aria-hidden="true">→</span></a>
+        </article>
+        {% empty %}
+        <p class="aes-empty">Aucun service — fournir le queryset <code>services</code> dans la vue.</p>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  {# —— Pause éditoriale —— #}
+  <section class="aes-editorial" aria-label="Signature visuelle" data-reveal>
+    <div class="aes-editorial__bg" data-parallax="editorial-bg" style="background-image: url('https://images.unsplash.com/photo-1504813184591-01572f98c85f?w=1920&q=85');"></div>
+    <div class="aes-editorial__linen" aria-hidden="true"></div>
+    <p class="aes-editorial__line">L'excellence,<br>celle qui se vit.</p>
+  </section>
+
+  {# —— Parcours (carrousel auto) —— #}
+  <section class="aes-journey journey-section" id="parcours" aria-labelledby="aes-journey-h2" data-reveal>
+    <div class="aes-journey__intro">
+      <h2 id="aes-journey-h2" class="aes-journey__title">Votre parcours, simplifié.</h2>
+      <p class="aes-journey__sub">De la prise de RDV à votre ordonnance, en toute sérénité.</p>
+    </div>
+
+    <div class="journey-carousel">
+      <div class="journey-steps">
+        <div class="journey-step active" data-step="0">
+          <div class="step-image">
+            <img src="https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?w=400&q=80&fit=crop" alt="" loading="lazy" decoding="async" width="400" height="250" onerror="this.style.display='none'">
+            <div class="step-number-bg" aria-hidden="true">01</div>
+          </div>
+          <div class="step-icon" aria-hidden="true"><svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.1"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div>
+          <h3 class="step-title">Prendre RDV</h3>
+          <p class="step-desc">Réservation en ligne fluide, créneaux alignés sur la disponibilité réelle des praticiens.</p>
+        </div>
+        <div class="journey-step" data-step="1">
+          <div class="step-image">
+            <img src="https://images.unsplash.com/photo-1559000357-f6b52ddfbe37?w=400&q=80&fit=crop" alt="" loading="lazy" decoding="async" width="400" height="250" onerror="this.style.display='none'">
+            <div class="step-number-bg" aria-hidden="true">02</div>
+          </div>
+          <div class="step-icon" aria-hidden="true"><svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.1"><path d="M4.5 12h15M12 4.5v15"/><circle cx="12" cy="12" r="3"/></svg></div>
+          <h3 class="step-title">Accueil &amp; Constantes</h3>
+          <p class="step-desc">Accueil discret, mesures et préparation par l'équipe soignante avant la consultation.</p>
+        </div>
+        <div class="journey-step journey-step--alt" data-step="2">
+          <div class="step-image">
+            <img src="https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=400&q=80&fit=crop" alt="" loading="lazy" decoding="async" width="400" height="250" onerror="this.style.display='none'">
+            <div class="step-number-bg" aria-hidden="true">03</div>
+          </div>
+          <div class="step-icon" aria-hidden="true"><svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.1"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+          <h3 class="step-title">Consultation médicale</h3>
+          <p class="step-desc">Écoute, diagnostic précis et plan de soins personnalisé avec votre médecin référent.</p>
+        </div>
+        <div class="journey-step" data-step="3">
+          <div class="step-image">
+            <img src="https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=400&q=80&fit=crop" alt="" loading="lazy" decoding="async" width="400" height="250" onerror="this.style.display='none'">
+            <div class="step-number-bg" aria-hidden="true">04</div>
+          </div>
+          <div class="step-icon" aria-hidden="true"><svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.1"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg></div>
+          <h3 class="step-title">Facturation &amp; Reçu</h3>
+          <p class="step-desc">Documents, règlement et prochaines étapes expliqués avec clarté à la sortie.</p>
+        </div>
+      </div>
+      <div class="journey-progress-bar" aria-hidden="true">
+        <div class="journey-progress-fill" id="journey-progress-fill"></div>
+      </div>
+      <div class="journey-dots" role="tablist" aria-label="Étapes du parcours">
+        <button type="button" class="dot active" data-index="0" aria-label="Étape 1" role="tab" aria-selected="true"></button>
+        <button type="button" class="dot" data-index="1" aria-label="Étape 2" role="tab" aria-selected="false"></button>
+        <button type="button" class="dot" data-index="2" aria-label="Étape 3" role="tab" aria-selected="false"></button>
+        <button type="button" class="dot" data-index="3" aria-label="Étape 4" role="tab" aria-selected="false"></button>
+      </div>
+    </div>
+  </section>
+
+  {# —— Médecins —— #}
+  <section class="aes-docs" id="medecins" aria-labelledby="aes-docs-h2" data-reveal>
+    <div class="aes-docs__head">
+      <h2 id="aes-docs-h2" class="aes-docs__title">Rencontrez Nos Praticiens</h2>
+    </div>
+    <div class="aes-docs__rail" tabindex="0" role="region" aria-label="Médecins">
+      {% for medecin in doctors %}
+      <article class="aes-doc">
+        <div class="aes-doc__visual">
+          {% if medecin.photo %}
+          <img class="aes-doc__img" src="{{ medecin.photo.url }}" alt="" width="640" height="480" loading="lazy" decoding="async" onerror="this.style.display='none'">
+          {% else %}
+          <div class="aes-doc__ph doctor-photo-placeholder">
+            <span class="doctor-initials">{{ medecin.initials|default:medecin.nom|slice:":2"|upper }}</span>
+          </div>
+          {% endif %}
+        </div>
+        <div class="aes-doc__body">
+          <h3 class="aes-doc__name">{{ medecin.nom }}</h3>
+          <p class="aes-doc__spec">{{ medecin.specialite }}</p>
+          <div class="aes-doc__tags">
+            {% for kw in medecin.keywords %}
+            <span class="aes-doc__chip">{{ kw }}</span>
+            {% endfor %}
+          </div>
+        </div>
+        <a class="aes-doc__cta" href="{% url 'appointments:create' %}?doctor={{ medecin.pk|default:medecin.id }}">Prendre RDV</a>
+      </article>
+      {% empty %}
+      <p class="aes-empty aes-empty--rail">Aucun médecin — queryset <code>doctors</code> (6 max).</p>
+      {% endfor %}
+    </div>
+  </section>
+
+  {# —— Témoignages —— #}
+  <section class="aes-tm" id="temoignages" aria-labelledby="aes-tm-h2" data-reveal>
+    <div class="aes-tm__inner">
+      <h2 id="aes-tm-h2" class="aes-tm__title"><em>La confiance, témoignage après témoignage.</em></h2>
+      <div class="aes-tm__grid">
+        {% for t in testimonials %}
+        <figure class="aes-tm-card">
+          <span class="aes-tm-card__mark" aria-hidden="true">“</span>
+          <blockquote class="aes-tm-card__quote">{{ t.content }}</blockquote>
+          <figcaption class="aes-tm-card__meta">
+            <span class="aes-tm-card__av" aria-hidden="true">{{ t.initials|default:t.author_initials }}</span>
+            <div>
+              <span class="aes-tm-card__who">{{ t.initials|default:t.author_initials }}</span>
+              <div class="aes-tm-card__stars" role="img" aria-label="Note {{ t.rating|default:5 }} sur 5">
+                {% with r=t.rating|default:5 %}
+                {% for i in "12345" %}
+                  {% if forloop.counter <= r %}<span aria-hidden="true">★</span>{% else %}<span class="aes-tm-card__dim" aria-hidden="true">★</span>{% endif %}
+                {% endfor %}
+                {% endwith %}
+              </div>
+            </div>
+          </figcaption>
+        </figure>
+        {% empty %}
+        <p class="aes-empty aes-empty--dark">Aucun témoignage — queryset <code>testimonials</code>.</p>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <section class="aes-about about-section" id="a-propos" aria-labelledby="aes-about-h2" data-reveal>
+    <div class="about-inner">
+      <div class="about-text">
+        <span class="section-tag">À propos d'Aesculia</span>
+        <h2 id="aes-about-h2" class="about-heading">Une clinique fondée sur<br>l'humain avant tout.</h2>
+        <p>Depuis {{ stats.years }} ans, Aesculia réunit les meilleurs praticiens autour d'une conviction commune : chaque patient mérite une écoute totale, un diagnostic précis, et un accompagnement sur mesure.</p>
+        <p>Notre approche conjugue rigueur médicale et chaleur humaine, dans un cadre pensé pour votre sérénité.</p>
+        <a href="#philosophie" class="aes-btn aes-btn--moss about-cta">Notre histoire <span aria-hidden="true">→</span></a>
+      </div>
+      <div class="about-image-stack">
+        <img class="about-img-main" src="https://images.unsplash.com/photo-1666214280557-f24b8ee65c52?w=500&q=80&fit=crop" alt="" loading="lazy" decoding="async" width="500" height="380" onerror="this.style.display='none'">
+        <img class="about-img-secondary" src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=400&q=80&fit=crop" alt="" loading="lazy" decoding="async" width="400" height="260" onerror="this.style.display='none'">
+        <div class="about-accent-dot" aria-hidden="true"></div>
+      </div>
+    </div>
+  </section>
+
+  {# —— CTA —— #}
+  <section class="aes-cta" aria-labelledby="aes-cta-h2" data-reveal>
+    <div class="aes-cta__bg" data-parallax="cta-bg" style="background-image: url('https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=1920&q=85');"></div>
+    <div class="aes-cta__veil" aria-hidden="true"></div>
+    <div class="aes-cta__content">
+      <p class="aes-cta__tag">Rejoignez Aesculia</p>
+      <h2 id="aes-cta-h2" class="aes-cta__h2">Votre santé mérite<br>ce qu'il y a de mieux.</h2>
+      <p class="aes-cta__sub">Rejoignez les <strong>{{ stats.patients_count|default:0 }}+</strong> patients qui nous font confiance.</p>
+      <a class="aes-btn aes-btn--moss aes-btn--xl aes-btn--pulse" href="{% url 'appointments:create' %}">Réserver ma consultation</a>
+    </div>
+  </section>
+</main>
+
+<footer class="aes-footer" id="contact" role="contentinfo">
+  <div class="aes-footer__grid">
+    <div class="aes-footer__col aes-footer__col--brand">
+      <div class="aes-footer__brand">
+        <span class="aes-footer__mark" aria-hidden="true">
+          <svg width="28" height="28" viewBox="0 0 32 32" fill="none"><path d="M16 4v24M10 8c0 4 3 6 6 6s6-2 6-6M10 24c0-4 3-6 6-6s6 2 6 6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><circle cx="16" cy="16" r="2" fill="currentColor"/></svg>
+        </span>
+        <span class="aes-footer__word">{{ clinic.name|default:"AESCULIA" }}</span>
+      </div>
+      <p class="aes-footer__stmt">{{ clinic.tagline }}</p>
+      <p class="aes-footer__stmt2">{{ clinic.subtagline }}</p>
+      <div class="aes-footer__social">
+        <a href="#" class="aes-footer__soc" aria-label="LinkedIn"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg></a>
+        <a href="#" class="aes-footer__soc" aria-label="Instagram"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37zM17.5 6.5h.01"/></svg></a>
+      </div>
+    </div>
+    <div class="aes-footer__col">
+      <h3 class="aes-footer__h">Navigation</h3>
+      <ul class="aes-footer__links">
+        <li><a href="#hero">Accueil</a></li>
+        <li><a href="#soins">Soins</a></li>
+        <li><a href="#medecins">Médecins</a></li>
+        <li><a href="#parcours">Parcours</a></li>
+        <li><a href="#a-propos">À propos</a></li>
+        <li><a href="#temoignages">Témoignages</a></li>
+        <li><a href="#contact">Contact</a></li>
+        <li><a href="{% url 'appointments:create' %}">Prendre RDV</a></li>
+      </ul>
+    </div>
+    <div class="aes-footer__col">
+      <h3 class="aes-footer__h">Contact</h3>
+      <ul class="aes-footer__contact">
+        <li>
+          <span class="aes-footer__ico" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></span>
+          <span>{{ clinic.address }}</span>
+        </li>
+        <li>
+          <span class="aes-footer__ico" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span>
+          <a href="tel:{{ clinic.phone }}">{{ clinic.phone }}</a>
+        </li>
+        <li>
+          <span class="aes-footer__ico" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="m22 6-10 7L2 6"/></svg></span>
+          <a href="mailto:{{ clinic.email }}">{{ clinic.email }}</a>
+        </li>
+      </ul>
+    </div>
+    <div class="aes-footer__col">
+      <h3 class="aes-footer__h">Horaires</h3>
+      <p class="aes-footer__hours">{{ clinic.hours }}</p>
+      <p class="aes-footer__pro"><a class="aes-footer__pro-link" href="{% url 'auth:login' %}">Espace Professionnel</a></p>
+    </div>
+  </div>
+  <div class="aes-footer__bar">
+    <span>© {% now "Y" %} {{ clinic.name|default:"AESCULIA" }}. Tous droits réservés.</span>
+    <span>Propulsé par {{ system_name|default:"Clinic OS" }}</span>
+  </div>
+</footer>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/landing.js' %}" defer></script>
+{% endblock %}

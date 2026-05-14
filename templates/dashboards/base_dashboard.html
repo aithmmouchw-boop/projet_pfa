@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}{{ role_title }} · {{ clinic.name|default:"AESCULIA" }}{% endblock %}
+{% block body_class %}dash-body{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/auth.css' %}">
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+{% endblock %}
+{% block content %}
+<a href="#dash-main" class="skip-link">Aller au contenu</a>
+<div class="dash-app" data-role="{{ role_key }}">
+  <aside class="dash-sidebar" aria-label="Navigation principale">
+    <a class="dash-brand" href="{% url 'landing' %}">
+      <span class="dash-brand__mark">Aesculia</span>
+      <span class="dash-brand__role">Espace {{ role_title }}</span>
+    </a>
+    <nav class="dash-nav">
+      {% for item in dashboard_nav %}
+        {% if item.soon %}
+          <span class="dash-nav__item dash-nav__item--soon">{{ item.label }}</span>
+        {% else %}
+          <a
+            href="{% url item.url_name %}{% if item.fragment %}#{{ item.fragment }}{% endif %}"
+            class="{% if item.active %}is-active{% endif %}"
+          >{{ item.label }}</a>
+        {% endif %}
+      {% endfor %}
+    </nav>
+    <div class="dash-sidebar__foot">
+      <a href="{% url 'landing' %}">Site public</a>
+      <a href="{% url 'auth:logout' %}">Déconnexion</a>
+    </div>
+  </aside>
+  <div class="dash-shell">
+    <header class="dash-top">
+      <div class="dash-top__hello">
+        <h1>Bonjour{% if user_display %}, {{ user_display }}{% endif %}</h1>
+        <p>{{ dashboard_intro }}</p>
+      </div>
+      <span class="dash-top__badge">{{ role_title }}</span>
+    </header>
+    <main class="dash-main" id="dash-main">
+      {% block dash_main %}{% endblock %}
+    </main>
+  </div>
+</div>
+{% endblock %}

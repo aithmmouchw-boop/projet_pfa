@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Prendre rendez-vous · AESCULIA{% endblock %}
+
+{% block body_class %}rdv-page{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/appointments.css' %}">
+{% endblock %}
+
+{% block content %}
+<header class="rdv-header">
+  <a class="rdv-brand" href="{% url 'landing' %}">
+    <svg width="24" height="24" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M16 4v24M10 8c0 4 3 6 6 6s6-2 6-6M10 24c0-4 3-6 6-6s6 2 6 6" stroke="var(--accent-moss)" stroke-width="1.2" stroke-linecap="round"/>
+      <circle cx="16" cy="16" r="2" fill="var(--accent-moss)"/>
+    </svg>
+    <span class="rdv-brand__word">Aesculia</span>
+  </a>
+  <a class="rdv-back" href="{% url 'landing' %}">← Retour au site</a>
+</header>
+
+<main class="rdv-main">
+  <p class="rdv-kicker">Concierge</p>
+  <h1 class="rdv-h1">Prendre rendez-vous</h1>
+  <p class="rdv-lead">Indiquez vos coordonnées et votre message. Un membre de l’équipe vous recontacte sous 24h ouvrées pour confirmer un créneau.</p>
+
+  {% if prefill_doctor or prefill_service %}
+  <div class="rdv-chips" aria-label="Préférences depuis le site">
+    {% if prefill_doctor %}<span class="rdv-chip">Réf. praticien : {{ prefill_doctor }}</span>{% endif %}
+    {% if prefill_service %}<span class="rdv-chip">Réf. service : {{ prefill_service }}</span>{% endif %}
+  </div>
+  {% endif %}
+
+  {% if messages %}
+  <ul class="rdv-msgs" role="status">
+    {% for message in messages %}
+      <li class="rdv-msgs__item{% if message.tags %} rdv-msgs__item--{{ message.tags }}{% endif %}">{{ message }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+
+  <form method="post" class="rdv-card" action="" novalidate>
+    {% csrf_token %}
+    {% if form.non_field_errors %}
+      <ul class="rdv-errors">
+        {% for err in form.non_field_errors %}<li>{{ err }}</li>{% endfor %}
+      </ul>
+    {% endif %}
+
+    <p class="rdv-note rdv-note--info">Les créneaux définitifs sont validés par téléphone ou e-mail. Vous pouvez suivre vos demandes depuis votre espace patient.</p>
+
+    {% for field in form.hidden_fields %}{{ field }}{% endfor %}
+
+    <div class="rdv-field">
+      <label for="{{ form.full_name.id_for_label }}">{{ form.full_name.label }}</label>
+      {{ form.full_name }}
+      {% if form.full_name.errors %}<p class="rdv-field__err">{{ form.full_name.errors.0 }}</p>{% endif %}
+    </div>
+    <div class="rdv-field">
+      <label for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>
+      {{ form.email }}
+      {% if form.email.errors %}<p class="rdv-field__err">{{ form.email.errors.0 }}</p>{% endif %}
+    </div>
+    <div class="rdv-field">
+      <label for="{{ form.phone.id_for_label }}">{{ form.phone.label }} <span class="rdv-optional">(optionnel)</span></label>
+      {{ form.phone }}
+      {% if form.phone.errors %}<p class="rdv-field__err">{{ form.phone.errors.0 }}</p>{% endif %}
+    </div>
+    <div class="rdv-field">
+      <label for="{{ form.message.id_for_label }}">{{ form.message.label }} <span class="rdv-optional">(optionnel)</span></label>
+      {{ form.message }}
+      {% if form.message.errors %}<p class="rdv-field__err">{{ form.message.errors.0 }}</p>{% endif %}
+    </div>
+
+    <button type="submit" class="rdv-btn rdv-btn--submit">Envoyer la demande</button>
+  </form>
+
+  <p class="rdv-foot">Besoin d’urgence ? Appelez le standard indiqué sur la page d’accueil.</p>
+</main>
+{% endblock %}

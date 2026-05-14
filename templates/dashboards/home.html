@@ -1,0 +1,50 @@
+{% extends "dashboards/base_dashboard.html" %}
+{% block dash_main %}
+{% if dashboard_hero %}
+<section class="dash-hero" aria-labelledby="dash-hero-title">
+  {% if dashboard_hero.kicker %}
+    <p class="dash-hero__kicker">{{ dashboard_hero.kicker }}</p>
+  {% endif %}
+  <h2 id="dash-hero-title" class="dash-hero__title">{{ dashboard_hero.title }}</h2>
+  <p class="dash-hero__subtitle">{{ dashboard_hero.subtitle }}</p>
+  {% if dashboard_hero.primary_url_name %}
+    <a href="{% url dashboard_hero.primary_url_name %}" class="dash-btn dash-btn--primary dash-hero__cta">{{ dashboard_hero.primary_label }}</a>
+  {% endif %}
+</section>
+{% endif %}
+{% if dashboard_ctas %}
+<div class="dash-cta-row">
+  {% for cta in dashboard_ctas %}
+    <a class="dash-btn dash-btn--{{ cta.style|default:'primary' }}" href="{% if cta.url_name %}{% url cta.url_name %}{% else %}{{ cta.href }}{% endif %}">{{ cta.label }}</a>
+  {% endfor %}
+</div>
+{% endif %}
+<div class="dash-grid" role="region" aria-label="Aperçu">
+  {% for card in dashboard_cards %}
+    <article class="dash-card">
+      <h2>{{ card.title }}</h2>
+      <div class="dash-card__value">{{ card.value }}</div>
+      <p>{{ card.hint }}</p>
+    </article>
+  {% endfor %}
+</div>
+{% if role_key == "patient" %}
+<section class="dash-requests" id="demandes-rdv" aria-labelledby="dash-requests-title">
+  <h2 id="dash-requests-title" class="dash-requests__title">Mes demandes de rendez-vous</h2>
+  {% if appointment_requests %}
+    <ul class="dash-requests__list">
+      {% for ar in appointment_requests %}
+        <li class="dash-requests__item">
+          <span class="dash-requests__date">{{ ar.created_at|date:"d/m/Y H:i" }}</span>
+          <span class="dash-requests__status">{{ ar.get_status_display }}</span>
+          <span class="dash-requests__summary">{% if ar.doctor_ref or ar.service_ref %}{{ ar.service_ref|default:ar.doctor_ref|truncatechars:40 }}{% else %}Demande générale{% endif %}</span>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="dash-requests__empty">Aucune demande pour le moment.</p>
+  {% endif %}
+  <a class="dash-btn dash-btn--primary dash-requests__cta" href="{% url 'appointments:create' %}">Nouvelle demande</a>
+</section>
+{% endif %}
+{% endblock %}

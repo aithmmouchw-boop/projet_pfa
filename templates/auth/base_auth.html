@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{% block auth_title %}Connexion{% endblock %} · AESCULIA{% endblock %}
+
+{% block body_class %}auth-body{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/auth.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="auth-shell" data-auth-shell>
+  <div class="auth-shell__mobilebar" aria-hidden="false">
+    <div class="auth-shell__mobilebar-inner">
+      <span class="auth-shell__mobilebar-mark" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M16 4v24M10 8c0 4 3 6 6 6s6-2 6-6M10 24c0-4 3-6 6-6s6 2 6 6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+          <circle cx="16" cy="16" r="2" fill="currentColor"/>
+        </svg>
+      </span>
+      <span class="auth-shell__mobilebar-word">AESCULIA</span>
+    </div>
+  </div>
+  <div class="auth-shell__grid">
+    {% include "auth/includes/panel_left.html" %}
+    <main class="auth-shell__main">
+      <div class="auth-shell__main-inner auth-stagger">
+        {% block auth_main %}{% endblock %}
+      </div>
+    </main>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/auth.js' %}" defer></script>
+{% endblock %}

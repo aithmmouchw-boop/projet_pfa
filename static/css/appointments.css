@@ -1,0 +1,277 @@
+/* AESCULIA — page prise de RDV (alignée Ivory & Moss) */
+
+:root {
+  --bg-primary: #f7f4ef;
+  --bg-surface: #eeeae3;
+  --accent-moss: #3d6b4f;
+  --accent-moss-hover: #2d5040;
+  --accent-gold: #c9a96e;
+  --text-dark: #1a1a1a;
+  --text-muted: #6b7b6e;
+  --font-display: "Cormorant Garamond", Georgia, serif;
+  --font-body: "DM Sans", system-ui, sans-serif;
+}
+
+.rdv-page {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg-primary);
+  font-family: var(--font-body);
+  color: var(--text-dark);
+  -webkit-font-smoothing: antialiased;
+}
+
+.rdv-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  background: rgba(247, 244, 239, 0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(61, 107, 79, 0.1);
+}
+
+.rdv-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  color: var(--text-dark);
+}
+
+.rdv-brand__word {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.rdv-back {
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: var(--accent-moss);
+  text-decoration: none;
+}
+
+.rdv-back:hover {
+  text-decoration: underline;
+}
+
+.rdv-main {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 4rem;
+}
+
+.rdv-kicker {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent-moss);
+  margin: 0 0 0.5rem;
+}
+
+.rdv-h1 {
+  font-family: var(--font-display);
+  font-size: clamp(2.25rem, 5vw, 2.75rem);
+  font-weight: 400;
+  line-height: 1.1;
+  margin: 0 0 0.75rem;
+}
+
+.rdv-lead {
+  margin: 0 0 2rem;
+  font-size: 1rem;
+  font-weight: 300;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.rdv-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.rdv-chip {
+  font-size: 0.78rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(61, 107, 79, 0.1);
+  color: var(--accent-moss);
+  border: 1px solid rgba(61, 107, 79, 0.2);
+}
+
+.rdv-card {
+  background: #fff;
+  border: 1px solid rgba(61, 107, 79, 0.15);
+  border-radius: 20px;
+  padding: 1.75rem 1.5rem;
+  box-shadow: 0 12px 40px rgba(28, 43, 30, 0.06);
+}
+
+.rdv-field {
+  margin-bottom: 1.25rem;
+}
+
+.rdv-field label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 0.4rem;
+}
+
+.rdv-field input,
+.rdv-field textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.85rem 1rem;
+  border: 1.5px solid rgba(61, 107, 79, 0.2);
+  border-radius: 12px;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  background: #fafaf8;
+}
+
+.rdv-field input:focus,
+.rdv-field textarea:focus {
+  outline: none;
+  border-color: var(--accent-moss);
+  box-shadow: 0 0 0 3px rgba(61, 107, 79, 0.08);
+}
+
+.rdv-field textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.rdv-field input:disabled,
+.rdv-field textarea:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.rdv-note {
+  margin: 0 0 1.25rem;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  background: rgba(201, 169, 110, 0.12);
+  border: 1px solid rgba(201, 169, 110, 0.35);
+  font-size: 0.88rem;
+  font-weight: 300;
+  color: var(--text-dark);
+  line-height: 1.5;
+}
+
+.rdv-btn {
+  width: 100%;
+  padding: 1rem 1.5rem;
+  border: none;
+  border-radius: 12px;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 500;
+  background: var(--accent-moss);
+  color: #fff;
+  cursor: pointer;
+}
+
+.rdv-btn--submit:hover {
+  background: var(--accent-moss-hover);
+}
+
+.rdv-btn--secondary {
+  background: transparent;
+  color: var(--accent-moss);
+  border: 1.5px solid rgba(61, 107, 79, 0.35);
+}
+
+.rdv-btn--secondary:hover {
+  background: rgba(61, 107, 79, 0.06);
+}
+
+.rdv-btn--inline {
+  width: auto;
+  min-width: 10rem;
+  text-decoration: none;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.rdv-done-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 2rem;
+}
+
+.rdv-main--narrowtext .rdv-lead {
+  margin-bottom: 0;
+}
+
+.rdv-msgs {
+  list-style: none;
+  margin: 0 0 1.5rem;
+  padding: 0;
+}
+
+.rdv-msgs__item {
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: 400;
+  background: rgba(61, 107, 79, 0.1);
+  color: var(--text-dark);
+  border: 1px solid rgba(61, 107, 79, 0.2);
+}
+
+.rdv-msgs__item--success {
+  background: rgba(123, 174, 138, 0.18);
+  border-color: rgba(61, 107, 79, 0.25);
+}
+
+.rdv-errors {
+  margin: 0 0 1rem;
+  padding: 0.75rem 1rem;
+  list-style: none;
+  border-radius: 12px;
+  background: rgba(180, 80, 60, 0.08);
+  border: 1px solid rgba(180, 80, 60, 0.25);
+  color: #5c2a22;
+  font-size: 0.88rem;
+}
+
+.rdv-field__err {
+  margin: 0.35rem 0 0;
+  font-size: 0.8rem;
+  color: #8b3a2e;
+}
+
+.rdv-optional {
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--text-muted);
+  font-size: 0.85em;
+}
+
+.rdv-note--info {
+  background: rgba(61, 107, 79, 0.08);
+  border-color: rgba(61, 107, 79, 0.22);
+}
+
+.rdv-foot {
+  margin-top: 2rem;
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-weight: 300;
+}

@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Demande enregistrée · AESCULIA{% endblock %}
+
+{% block body_class %}rdv-page{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/appointments.css' %}">
+{% endblock %}
+
+{% block content %}
+<header class="rdv-header">
+  <a class="rdv-brand" href="{% url 'landing' %}">
+    <svg width="24" height="24" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M16 4v24M10 8c0 4 3 6 6 6s6-2 6-6M10 24c0-4 3-6 6-6s6 2 6 6" stroke="var(--accent-moss)" stroke-width="1.2" stroke-linecap="round"/>
+      <circle cx="16" cy="16" r="2" fill="var(--accent-moss)"/>
+    </svg>
+    <span class="rdv-brand__word">Aesculia</span>
+  </a>
+  <a class="rdv-back" href="{% url 'landing' %}">← Retour au site</a>
+</header>
+
+<main class="rdv-main rdv-main--narrowtext">
+  <p class="rdv-kicker">Merci</p>
+  <h1 class="rdv-h1">Demande bien reçue</h1>
+  {% if messages %}
+  <ul class="rdv-msgs" role="status">
+    {% for message in messages %}
+      <li class="rdv-msgs__item{% if message.tags %} rdv-msgs__item--{{ message.tags }}{% endif %}">{{ message }}</li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p class="rdv-lead">Nous avons enregistré votre demande. L’équipe concierge vous recontacte très prochainement.</p>
+  {% endif %}
+  <div class="rdv-done-actions">
+    {% if user.is_authenticated %}
+      {% if user.role == 'patient' %}
+        <a class="rdv-btn rdv-btn--submit rdv-btn--inline" href="{% url 'patient_dashboard' %}#demandes-rdv">Voir mes demandes</a>
+      {% endif %}
+    {% endif %}
+    <a class="rdv-btn rdv-btn--secondary rdv-btn--inline" href="{% url 'landing' %}">Accueil</a>
+  </div>
+</main>
+{% endblock %}
