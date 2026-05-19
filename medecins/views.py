@@ -5,8 +5,11 @@ from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
+from django.views import View
 from django.views.generic import TemplateView
 
+from clinic_common.audit import log_activity
+from clinic_common.models import SystemActivity
 from consultations.models import Consultation, Ordonnance
 from facturation.models import Facture, LigneFacture
 from facturation.utils import next_facture_numero
@@ -37,6 +40,27 @@ def _shell(request, intro: str) -> dict:
     }
 
 
+def _creer_facture_consultation(consultation: Consultation):
+    facture = Facture.objects.filter(consultation=consultation).first()
+    if facture:
+        return facture, False
+    med = consultation.medecin
+    facture = Facture.objects.create(
+        consultation=consultation,
+        patient=consultation.patient,
+        numero=next_facture_numero(),
+        statut=Facture.Statut.BROUILLON,
+    )
+    LigneFacture.objects.create(
+        facture=facture,
+        libelle=f"Consultation - Dr. {med.user.get_full_name() or med.user.email}",
+        quantite=1,
+        prix_unitaire=med.tarif_consultation,
+    )
+    facture.calculer_total()
+    return facture, True
+
+
 class MedecinDashboardView(MedecinAccountMixin, TemplateView):
     template_name = "medecin/dashboard.html"
 
@@ -59,10 +83,42 @@ class MedecinDashboardView(MedecinAccountMixin, TemplateView):
                 "role_title": "Médecin",
                 "dashboard_nav": _nav_med("Vue d'ensemble"),
                 "consultations_today": consultations,
+                "consultations_waiting_count": consultations.count(),
             }
         )
         ctx.update(_shell(self.request, "File du jour et consultations ouvertes."))
         return ctx
+
+
+class ConsultationTerminerRapideView(MedecinAccountMixin, View):
+    def post(self, request, pk):
+        consultation = get_object_or_404(
+            Consultation.objects.select_related(
+                "patient__user", "medecin__user", "rendez_vous"
+            ),
+            pk=pk,
+            medecin=request.medecin_profile,
+            termine=False,
+        )
+        with transaction.atomic():
+            consultation.termine = True
+            consultation.save(update_fields=["termine"])
+            rdv = consultation.rendez_vous
+            rdv.statut = RendezVous.Statut.TERMINE
+            rdv.save(update_fields=["statut"])
+            facture, created = _creer_facture_consultation(consultation)
+        log_activity(
+            action=SystemActivity.Action.CONSULTATION_FINISHED,
+            description="Consultation terminee depuis le dashboard medecin",
+            request=request,
+            metadata={
+                "consultation_id": consultation.pk,
+                "facture_id": facture.pk,
+                "facture_created": created,
+            },
+        )
+        messages.success(request, "Consultation terminee et facture ajoutee chez le caissier.")
+        return redirect(reverse("medecins:medecin_dashboard"))
 
 
 class ConsultationDetailView(MedecinAccountMixin, TemplateView):
@@ -132,20 +188,17 @@ class ConsultationDetailView(MedecinAccountMixin, TemplateView):
             rdv = self.consultation.rendez_vous
             rdv.statut = RendezVous.Statut.TERMINE
             rdv.save(update_fields=["statut"])
-            med = self.request.medecin_profile  # type: ignore[attr-defined]
-            facture = Facture.objects.create(
-                consultation=self.consultation,
-                patient=self.consultation.patient,
-                numero=next_facture_numero(),
-                statut=Facture.Statut.BROUILLON,
-            )
-            LigneFacture.objects.create(
-                facture=facture,
-                libelle=f"Consultation — Dr. {med.user.get_full_name() or med.user.email}",
-                quantite=1,
-                prix_unitaire=med.tarif_consultation,
-            )
-            facture.calculer_total()
+            facture, created = _creer_facture_consultation(self.consultation)
+        log_activity(
+            action=SystemActivity.Action.CONSULTATION_FINISHED,
+            description="Consultation terminee depuis la fiche medecin",
+            request=request,
+            metadata={
+                "consultation_id": self.consultation.pk,
+                "facture_id": facture.pk,
+                "facture_created": created,
+            },
+        )
         messages.success(
             self.request, "Consultation terminée et facture brouillon créée."
         )

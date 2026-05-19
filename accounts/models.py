@@ -34,13 +34,14 @@ class User(AbstractUser):
     """Utilisateur plateforme — connexion par e-mail et rôle pour la redirection."""
 
     username = None
-    email = models.EmailField(_("adresse e-mail"), unique=True)
+    # 191 : index unique compatible utf8mb4 (limite de longueur de clé MySQL / InnoDB).
+    email = models.EmailField(_("adresse e-mail"), unique=True, max_length=191)
     role = models.CharField(
         max_length=20,
         choices=[
             ("patient", _("Patient")),
             ("medecin", _("Médecin")),
-            ("infirmier", _("Infirmier")),
+            ("infirmier", _("Secretaire")),
             ("caissier", _("Caissier")),
             ("admin", _("Administrateur")),
         ],
@@ -58,3 +59,17 @@ class User(AbstractUser):
 
     def __str__(self) -> str:
         return self.email
+
+
+class InfirmierAccount(User):
+    class Meta:
+        proxy = True
+        verbose_name = _("secretaire")
+        verbose_name_plural = _("secretaires")
+
+
+class CaissierAccount(User):
+    class Meta:
+        proxy = True
+        verbose_name = _("caissier")
+        verbose_name_plural = _("caissiers")

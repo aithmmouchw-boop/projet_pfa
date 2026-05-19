@@ -154,7 +154,7 @@
 
 .auth-shell__main-inner {
   width: 100%;
-  max-width: 420px;
+  max-width: 460px;
 }
 
 .auth-mobile-icon {
@@ -212,6 +212,15 @@
   margin-bottom: 1.25rem;
 }
 
+.field-grid {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.field-grid--two {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 .field-group--float {
   position: relative;
 }
@@ -245,6 +254,10 @@
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
+.input-wrapper--textarea {
+  align-items: flex-start;
+}
+
 .input-wrapper:focus-within {
   border-color: var(--accent-moss);
   box-shadow: 0 0 0 3px rgba(61, 107, 79, 0.08);
@@ -262,6 +275,10 @@
   transition: color 0.25s ease, opacity 0.25s ease;
 }
 
+.input-ico--top {
+  margin-top: 0.15rem;
+}
+
 .auth-input-native {
   flex: 1;
   min-width: 0;
@@ -271,6 +288,27 @@
   font-family: var(--font-body);
   font-size: 0.95rem;
   color: var(--text-dark);
+}
+
+.auth-select-native {
+  cursor: pointer;
+}
+
+.auth-textarea-native {
+  min-height: 5.5rem;
+  resize: vertical;
+}
+
+.auth-form-note {
+  margin: 0.4rem 0 0;
+  font-size: 0.78rem;
+  font-weight: 300;
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+
+.auth-role-fields[hidden] {
+  display: none !important;
 }
 
 .input-toggle-pw {
@@ -661,5 +699,10 @@
 
   .auth-input-native {
     font-size: 16px;
+  }
+
+  .field-grid--two {
+    grid-template-columns: 1fr;
+    gap: 0;
   }
 }

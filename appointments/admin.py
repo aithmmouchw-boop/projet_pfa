@@ -16,3 +16,6 @@ class AppointmentRequestAdmin(admin.ModelAdmin):
     search_fields = ("full_name", "email", "message", "doctor_ref", "service_ref")
     readonly_fields = ("created_at",)
     ordering = ("-created_at",)
+
+    def has_delete_permission(self, request, obj=None):
+        return False

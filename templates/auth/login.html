@@ -73,7 +73,7 @@
 </form>
 
 <div class="auth-divider" role="presentation"></div>
-<p class="auth-footnote">Vous êtes patient ? <a class="auth-link-accent" href="{% url 'landing' %}#hero">Prendre rendez-vous <span aria-hidden="true">→</span></a></p>
+<p class="auth-footnote">Pas encore de compte ? <a class="auth-link-accent" href="{% url 'auth:register' %}">S'inscrire <span aria-hidden="true">-&gt;</span></a></p>
 
 <p class="auth-legal">© {% now "Y" %} AESCULIA · Mentions légales · Politique de confidentialité</p>
 {% endblock %}

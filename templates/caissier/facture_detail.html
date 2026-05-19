@@ -1,49 +1,75 @@
 {% extends "dashboards/base_dashboard.html" %}
 {% block dash_main %}
-<div class="dash-card" style="margin-bottom:1rem;">
-  <h2 style="font-family:var(--font-display);font-weight:400;">{{ facture.numero }}</h2>
-  <p>Patient : <strong>{{ facture.patient.user.get_full_name|default:facture.patient.user.email }}</strong></p>
-  <p>Médecin : Dr. {{ facture.consultation.medecin.user.get_full_name|default:facture.consultation.medecin.user.email }}</p>
-  <p>Statut : <span class="badge badge-{{ facture.statut }}">{{ facture.get_statut_display }}</span></p>
+<section class="cashier-file">
+  <div class="cashier-file__head">
+    <div>
+      <span class="cashier-file__eyebrow">Fichier consultation</span>
+      <h2>{{ facture.patient.user.get_full_name|default:facture.patient.user.email }}</h2>
+      <p>{{ facture.numero }} / {{ facture.consultation.date|date:"d/m/Y H:i" }}</p>
+    </div>
+    {% if facture.statut == "payee" %}
+      <span class="cashier-status cashier-status--paid">Paid</span>
+    {% else %}
+      <span class="cashier-status cashier-status--unpaid">Unpaid</span>
+    {% endif %}
+  </div>
+  <div class="cashier-file__grid">
+    <p><span>Patient</span><strong>{{ facture.patient.user.get_full_name|default:facture.patient.user.email }}</strong></p>
+    <p><span>Doctor</span><strong>Dr. {{ facture.consultation.medecin.user.get_full_name|default:facture.consultation.medecin.user.email }}</strong></p>
+    <p><span>Specialite</span><strong>{{ facture.consultation.medecin.specialite }}</strong></p>
+    <p><span>Consultation Date</span><strong>{{ facture.consultation.date|date:"d/m/Y" }}</strong></p>
+    <p><span>Amount</span><strong>{{ facture.total_ttc|floatformat:2 }} DH</strong></p>
+    <p><span>Status</span><strong>{% if facture.statut == "payee" %}Paid{% else %}Non paye{% endif %}</strong></p>
+  </div>
+</section>
+
+<div class="cashier-layout">
+  <section class="cashier-panel">
+    <div class="cashier-panel__title">
+      <h3>Prix automatique</h3>
+      <span>{{ facture.total_ttc|floatformat:2 }} DH</span>
+    </div>
+    <div class="dash-table-wrap">
+      <table class="dash-table">
+        <thead><tr><th>Libelle</th><th>Qte</th><th>P.U.</th><th>Total ligne</th></tr></thead>
+        <tbody>
+          {% for l in facture.lignes.all %}
+            <tr>
+              <td>{{ l.libelle }}</td>
+              <td>{{ l.quantite }}</td>
+              <td>{{ l.prix_unitaire|floatformat:2 }} DH</td>
+              <td>{{ l.montant_ligne|floatformat:2 }} DH</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <p class="cashier-total">Deja paye : {{ total_paye|floatformat:2 }} DH / Reste : {{ reste|floatformat:2 }} DH</p>
+  </section>
+
+  <aside class="cashier-panel cashier-panel--payment">
+    {% if facture.statut == "payee" %}
+      <h3>Facture payee</h3>
+      <p>Le paiement est valide. La facture peut etre imprimee ou consultee.</p>
+      <a class="dash-btn dash-btn--primary" href="{% url 'facturation:facture_recu' facture.pk %}">Voir facture</a>
+    {% else %}
+      <h3>Paiement</h3>
+      <p>Choisir la methode, valider le paiement, puis la facture sera generee automatiquement.</p>
+      <form method="post" class="payment-form">{% csrf_token %}
+        <input type="hidden" name="encaisser" value="1">
+        {{ paiement_form.as_p }}
+        <button type="submit" class="dash-btn dash-btn--primary">Payer</button>
+      </form>
+    {% endif %}
+  </aside>
 </div>
-<div class="dash-table-wrap">
-  <table class="dash-table">
-    <thead><tr><th>Libellé</th><th>Qté</th><th>P.U.</th><th>Total ligne</th></tr></thead>
-    <tbody>
-      {% for l in facture.lignes.all %}
-        <tr>
-          <td>{{ l.libelle }}</td>
-          <td>{{ l.quantite }}</td>
-          <td>{{ l.prix_unitaire }} CHF</td>
-          <td>{{ l.montant_ligne }} CHF</td>
-        </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-</div>
-<p><strong>Total TTC :</strong> {{ facture.total_ttc }} CHF — <strong>Déjà payé :</strong> {{ total_paye }} CHF — <strong>Reste :</strong> {{ reste }} CHF</p>
 
-{% if facture.statut == "brouillon" %}
-<form method="post" style="margin:1rem 0;">{% csrf_token %}
-  <button type="submit" name="valider" value="1" class="dash-btn dash-btn--primary">Valider la facture</button>
-</form>
-{% endif %}
-
-<h3 class="dash-requests__title">Ajouter une ligne</h3>
-<form method="post" class="dash-card" style="padding:1rem;margin-bottom:1rem;">{% csrf_token %}
-  <input type="hidden" name="add_ligne" value="1">
-  {{ ligne_form.as_p }}
-  <button type="submit" class="dash-btn dash-btn--ghost">Ajouter</button>
-</form>
-
-<h3 class="dash-requests__title">Encaissement</h3>
-<form method="post" class="dash-card" style="padding:1rem;">{% csrf_token %}
-  <input type="hidden" name="encaisser" value="1">
-  {{ paiement_form.as_p }}
-  <button type="submit" class="dash-btn dash-btn--primary" style="margin-top:0.75rem;">Encaisser</button>
-</form>
-
-{% if facture.statut == "payee" %}
-<p style="margin-top:1rem;"><a class="dash-btn dash-btn--ghost" href="{% url 'facturation:facture_recu' facture.pk %}">Imprimer reçu</a></p>
-{% endif %}
+<details class="cashier-adjust">
+  <summary>Ajuster les lignes de facture</summary>
+  <form method="post">{% csrf_token %}
+    <input type="hidden" name="add_ligne" value="1">
+    {{ ligne_form.as_p }}
+    <button type="submit" class="dash-btn dash-btn--ghost">Ajouter une ligne</button>
+  </form>
+</details>
 {% endblock %}

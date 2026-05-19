@@ -1,8 +1,35 @@
 {% extends "dashboards/base_dashboard.html" %}
 {% block dash_main %}
-<div class="dash-card">
-  <h2 style="font-family:var(--font-display);font-weight:400;">Reçu — {{ facture.numero }}</h2>
-  <p>Montant total : {{ facture.total_ttc }} CHF</p>
-  <p>Statut : {{ facture.get_statut_display }}</p>
-</div>
+<section class="invoice-sheet" aria-label="Facture">
+  <div class="invoice-sheet__top">
+    <div>
+      <span>Invoice ID : #{{ facture.pk|stringformat:"04d" }}</span>
+      <h2>Aesculia</h2>
+    </div>
+    <strong>{% if facture.statut == "payee" %}Paid{% else %}Unpaid{% endif %}</strong>
+  </div>
+
+  <div class="invoice-lines">
+    <p><span>Patient :</span><strong>{{ facture.patient.user.get_full_name|default:facture.patient.user.email }}</strong></p>
+    <p><span>Doctor :</span><strong>Dr. {{ facture.consultation.medecin.user.get_full_name|default:facture.consultation.medecin.user.email }}</strong></p>
+    <p><span>Consultation Date :</span><strong>{{ facture.consultation.date|date:"d/m/Y" }}</strong></p>
+    <p><span>Amount :</span><strong>{{ facture.total_ttc|floatformat:2 }} DH</strong></p>
+    <p>
+      <span>Payment Method :</span>
+      <strong>
+        {% if latest_payment %}
+          {% if latest_payment.mode == "especes" %}Cash{% else %}{{ latest_payment.get_mode_display }}{% endif %}
+        {% else %}
+          Cash
+        {% endif %}
+      </strong>
+    </p>
+    <p><span>Status :</span><strong>{% if facture.statut == "payee" %}Paid{% else %}Unpaid{% endif %}</strong></p>
+  </div>
+
+  <div class="invoice-sheet__foot">
+    <a class="dash-btn dash-btn--ghost" href="{% url 'facturation:facture_detail' facture.pk %}">Retour</a>
+    <button class="dash-btn dash-btn--primary" onclick="window.print()">Imprimer</button>
+  </div>
+</section>
 {% endblock %}

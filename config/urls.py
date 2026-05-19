@@ -8,7 +8,7 @@ urlpatterns = [
     path("", include("sitepages.urls")),
     path("patient/", include("patients.urls")),
     path("medecin/", include("medecins.urls")),
-    path("infirmier/", include("infirmier.urls")),
+    path("secretaire/", include("secretaire.urls")),
     path("caissier/", include("facturation.urls")),
     path("auth/", include("accounts.urls")),
 ]

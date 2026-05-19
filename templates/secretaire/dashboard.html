@@ -14,11 +14,11 @@
           <td><span class="badge badge-{{ r.statut }}">{{ r.get_statut_display }}</span></td>
           <td>
             {% if r.statut == "planifie" or r.statut == "confirme" %}
-              <form method="post" action="{% url 'infirmier:rdv_arriver' r.pk %}" style="display:inline;">{% csrf_token %}
+              <form method="post" action="{% url 'secretaire:rdv_arriver' r.pk %}" style="display:inline;">{% csrf_token %}
                 <button type="submit" class="dash-btn dash-btn--primary" style="padding:0.35rem 0.65rem;font-size:0.78rem;">Marquer arrivé</button>
               </form>
             {% elif r.statut == "arrive" %}
-              <a class="dash-btn dash-btn--ghost" style="padding:0.35rem 0.65rem;font-size:0.78rem;" href="{% url 'infirmier:rdv_constantes' r.pk %}">Saisir constantes</a>
+              <a class="dash-btn dash-btn--ghost" style="padding:0.35rem 0.65rem;font-size:0.78rem;" href="{% url 'secretaire:rdv_constantes' r.pk %}">Saisir constantes</a>
             {% endif %}
           </td>
         </tr>

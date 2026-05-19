@@ -31,7 +31,7 @@ class RoleRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
         mapping = {
             "patient": "patients:patient_dashboard",
             "medecin": "medecins:medecin_dashboard",
-            "infirmier": "infirmier:infirmier_dashboard",
+            "infirmier": "secretaire:secretaire_dashboard",
             "caissier": "facturation:caissier_dashboard",
         }
         name = mapping.get(role)

@@ -12,14 +12,14 @@ from patients.utils import generer_num_dossier
 
 
 class Command(BaseCommand):
-    help = "Crée des comptes de démo (patient, médecin, infirmier, caissier) avec profils."
+    help = "Crée des comptes de démo (patient, médecin, secretaire, caissier) avec profils."
 
     def handle(self, *args, **options):
         pwd = "demo12345"
         specs = [
             ("patient@aesculia.local", "patient", "Pat", "Ient"),
             ("medecin@aesculia.local", "medecin", "Hélène", "Morel"),
-            ("infirmier@aesculia.local", "infirmier", "Sam", "Infirm"),
+            ("secretaire@aesculia.local", "infirmier", "Sam", "Secret"),
             ("caissier@aesculia.local", "caissier", "Cai", "Ssier"),
         ]
         for email, role, fn, ln in specs:

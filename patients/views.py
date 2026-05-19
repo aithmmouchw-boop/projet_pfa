@@ -5,6 +5,7 @@ from __future__ import annotations
 from datetime import datetime
 from types import SimpleNamespace
 from typing import Any
+from urllib.parse import urlencode
 
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -22,6 +23,35 @@ from patients.models import Patient
 from patients.utils import generer_num_dossier
 from rendez_vous.models import RendezVous
 from rendez_vous.services import creneaux_libres, prochains_jours
+
+
+def _normalise_slot_iso(slot_raw: str | None) -> str | None:
+    if not slot_raw:
+        return None
+    slot = slot_raw.strip()
+    if (
+        len(slot) >= 6
+        and slot[-6] == " "
+        and slot[-5:-3].isdigit()
+        and slot[-3] == ":"
+        and slot[-2:].isdigit()
+    ):
+        return f"{slot[:-6]}+{slot[-5:]}"
+    return slot
+
+
+def _rdv_booking_url(
+    medecin_id: str | int | None = None,
+    slot_iso: str | None = None,
+) -> str:
+    query = {}
+    if medecin_id:
+        query["medecin"] = medecin_id
+    slot_iso = _normalise_slot_iso(slot_iso)
+    if slot_iso:
+        query["slot"] = slot_iso
+    base_url = reverse("patients:rdv_nouveau")
+    return f"{base_url}?{urlencode(query)}" if query else base_url
 
 
 def _shell(request, intro: str) -> dict[str, Any]:
@@ -155,7 +185,7 @@ class RdvBookingView(PatientAccountMixin, TemplateView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         medecin_id = self.request.GET.get("medecin")
-        slot_iso = self.request.GET.get("slot")
+        slot_iso = _normalise_slot_iso(self.request.GET.get("slot"))
         medecin = None
         jours: list[dict[str, Any]] = []
         if medecin_id:
@@ -187,27 +217,27 @@ class RdvBookingView(PatientAccountMixin, TemplateView):
     def post(self, request, *args, **kwargs):
         if "medecin_id" in request.POST and "slot_iso" not in request.POST:
             mid = request.POST.get("medecin_id")
-            return redirect(f"{reverse('patients:rdv_nouveau')}?medecin={mid}")
+            return redirect(_rdv_booking_url(mid))
         if "slot_iso" in request.POST and "motif" not in request.POST:
             mid = request.POST.get("medecin_id")
             slot = request.POST.get("slot_iso")
-            return redirect(
-                f"{reverse('patients:rdv_nouveau')}?medecin={mid}&slot={slot}"
-            )
+            return redirect(_rdv_booking_url(mid, slot))
         form = RdvMotifForm(request.POST)
         if not form.is_valid():
             messages.error(request, "Vérifiez le motif de consultation.")
             mid = request.POST.get("medecin_id")
             slot = request.POST.get("slot_iso")
-            return redirect(
-                f"{reverse('patients:rdv_nouveau')}?medecin={mid}&slot={slot}"
-            )
+            return redirect(_rdv_booking_url(mid, slot))
         patient = request.patient_profile  # type: ignore[attr-defined]
         medecin = get_object_or_404(
             Medecin, pk=request.POST.get("medecin_id"), actif=True
         )
-        slot_raw = request.POST.get("slot_iso")
-        dt = datetime.fromisoformat(slot_raw)
+        slot_raw = _normalise_slot_iso(request.POST.get("slot_iso"))
+        try:
+            dt = datetime.fromisoformat(slot_raw or "")
+        except ValueError:
+            messages.error(request, "Le creneau choisi est invalide. Merci de le choisir a nouveau.")
+            return redirect(_rdv_booking_url(medecin.pk))
         if timezone.is_naive(dt):
             dt = timezone.make_aware(dt, timezone.get_current_timezone())
         rdv = RendezVous.objects.create(

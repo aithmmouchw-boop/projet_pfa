@@ -131,7 +131,7 @@ def _testimonials_demo():
 _PORTAL_BY_ROLE = {
     "patient": "patients:patient_dashboard",
     "medecin": "medecins:medecin_dashboard",
-    "infirmier": "infirmier:infirmier_dashboard",
+    "infirmier": "secretaire:secretaire_dashboard",
     "caissier": "facturation:caissier_dashboard",
 }
 

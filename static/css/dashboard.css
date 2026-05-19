@@ -181,7 +181,7 @@
   color: #7a6238;
 }
 
-.dash-app[data-role="infirmier"] .dash-top__badge {
+.dash-app[data-role="secretaire"] .dash-top__badge {
   background: rgba(123, 174, 138, 0.18);
   color: #2d5a3a;
 }
@@ -194,6 +194,61 @@
 .dash-main {
   flex: 1;
   padding: 1.75rem 1.75rem 2.5rem;
+}
+
+.dash-section-title {
+  margin: 1.5rem 0 0.75rem;
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 400;
+  color: var(--text-dark);
+}
+
+.dash-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.15rem;
+}
+
+.dash-metric {
+  min-height: 124px;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 8px 28px rgba(28, 43, 30, 0.04);
+}
+
+.dash-metrics--finance .dash-metric {
+  background:
+    linear-gradient(135deg, rgba(61, 107, 79, 0.06), rgba(73, 111, 144, 0.06)),
+    #fff;
+}
+
+.dash-metric__label {
+  display: block;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.dash-metric strong {
+  display: block;
+  margin-top: 0.5rem;
+  color: var(--text-dark);
+  font-size: 1.8rem;
+  line-height: 1.1;
+}
+
+.dash-metric small {
+  display: block;
+  margin-top: 0.45rem;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  line-height: 1.35;
 }
 
 .dash-hero {
@@ -308,6 +363,20 @@
   font-weight: 500;
   text-decoration: none;
   transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.dash-btn--compact {
+  min-height: 34px;
+  padding: 0.35rem 0.65rem;
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+
+.dash-actions-cell {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  align-items: center;
 }
 
 .dash-btn--primary {
@@ -591,6 +660,316 @@
 
 .dash-table tr:last-child td {
   border-bottom: none;
+}
+
+.cashier-file {
+  padding: 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, rgba(61, 107, 79, 0.08), rgba(201, 169, 110, 0.08)),
+    #fff;
+  box-shadow: 0 8px 28px rgba(28, 43, 30, 0.04);
+}
+
+.cashier-file__head {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.cashier-file__eyebrow {
+  display: block;
+  color: var(--accent-moss);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.cashier-file h2 {
+  margin: 0.35rem 0 0;
+  font-family: var(--font-display);
+  font-size: 1.65rem;
+  font-weight: 400;
+  color: var(--text-dark);
+}
+
+.cashier-file p {
+  margin: 0.35rem 0 0;
+  color: var(--text-muted);
+}
+
+.cashier-status {
+  flex-shrink: 0;
+  padding: 0.4rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.cashier-status--paid {
+  background: rgba(123, 174, 138, 0.22);
+  color: #2d5a3a;
+}
+
+.cashier-status--unpaid {
+  background: rgba(201, 169, 110, 0.18);
+  color: #7a6238;
+}
+
+.cashier-file__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.75rem;
+  margin-top: 1.1rem;
+}
+
+.cashier-file__grid p {
+  margin: 0;
+  padding: 0.8rem;
+  border: 1px solid rgba(217, 225, 218, 0.9);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.cashier-file__grid span,
+.cashier-panel__title span {
+  display: block;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.cashier-file__grid strong {
+  display: block;
+  margin-top: 0.35rem;
+  color: var(--text-dark);
+  font-size: 0.95rem;
+  overflow-wrap: anywhere;
+}
+
+.cashier-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(280px, 0.6fr);
+  gap: 1rem;
+  margin-top: 1rem;
+  align-items: start;
+}
+
+.cashier-panel {
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 8px 28px rgba(28, 43, 30, 0.04);
+}
+
+.cashier-panel--payment {
+  background:
+    linear-gradient(135deg, rgba(61, 107, 79, 0.08), rgba(73, 111, 144, 0.08)),
+    #fff;
+}
+
+.cashier-panel h3,
+.cashier-panel__title h3 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 400;
+  color: var(--text-dark);
+}
+
+.cashier-panel p {
+  color: var(--text-muted);
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+
+.cashier-panel__title {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: baseline;
+}
+
+.cashier-panel__title > span {
+  color: var(--accent-moss);
+  font-size: 1rem;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.cashier-total {
+  margin: 0.85rem 0 0;
+  color: var(--text-dark);
+  font-weight: 600;
+}
+
+.payment-form p,
+.cashier-adjust p {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin: 0 0 0.75rem;
+}
+
+.payment-form input,
+.payment-form select,
+.cashier-adjust input,
+.cashier-adjust select {
+  width: 100%;
+  min-height: 40px;
+  box-sizing: border-box;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0 0.7rem;
+  font: inherit;
+}
+
+.payment-form label,
+.cashier-adjust label {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.cashier-adjust {
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.cashier-adjust summary {
+  cursor: pointer;
+  color: var(--accent-moss);
+  font-weight: 600;
+}
+
+.cashier-adjust form {
+  margin-top: 1rem;
+}
+
+.invoice-sheet {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 2rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 18px 48px rgba(28, 43, 30, 0.1);
+}
+
+.invoice-sheet__top {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.invoice-sheet__top span {
+  display: block;
+  color: var(--accent-moss);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.invoice-sheet__top h2 {
+  margin: 0.45rem 0 0;
+  font-family: var(--font-display);
+  font-size: 2.2rem;
+  font-weight: 400;
+}
+
+.invoice-sheet__top > strong {
+  align-self: flex-start;
+  padding: 0.45rem 0.8rem;
+  border-radius: 999px;
+  background: rgba(123, 174, 138, 0.22);
+  color: #2d5a3a;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.invoice-lines {
+  display: grid;
+  gap: 0.85rem;
+  margin-top: 1.5rem;
+}
+
+.invoice-lines p {
+  display: grid;
+  grid-template-columns: minmax(150px, 0.42fr) 1fr;
+  gap: 1rem;
+  margin: 0;
+  padding: 0.85rem 0;
+  border-bottom: 1px solid rgba(217, 225, 218, 0.8);
+}
+
+.invoice-lines span {
+  color: var(--text-muted);
+}
+
+.invoice-lines strong {
+  color: var(--text-dark);
+}
+
+.invoice-sheet__foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+@media print {
+  .dash-sidebar,
+  .dash-top,
+  .invoice-sheet__foot {
+    display: none !important;
+  }
+
+  .dash-app {
+    display: block;
+  }
+
+  .dash-main {
+    padding: 0;
+  }
+
+  .invoice-sheet {
+    box-shadow: none;
+    border: 0;
+  }
+}
+
+@media (max-width: 900px) {
+  .cashier-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .cashier-file__head,
+  .cashier-panel__title,
+  .invoice-sheet__top {
+    flex-direction: column;
+  }
+
+  .invoice-lines p {
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
+  }
 }
 
 /* ── Logout button matches sidebar link style ── */

@@ -1,26 +1,40 @@
 {% extends "dashboards/base_dashboard.html" %}
 {% block dash_main %}
+<section class="dash-metrics" aria-label="Synthese medecin">
+  <article class="dash-metric">
+    <span class="dash-metric__label">Consultations a terminer</span>
+    <strong>{{ consultations_waiting_count }}</strong>
+    <small>Patients arrives ou en cours aujourd'hui</small>
+  </article>
+</section>
+
 <div class="dash-table-wrap">
   <table class="dash-table">
     <thead>
-      <tr><th>Heure</th><th>Patient</th><th>Constantes</th><th></th></tr>
+      <tr><th>Heure</th><th>Patient</th><th>Rendez-vous</th><th>Constantes</th><th>Actions</th></tr>
     </thead>
     <tbody>
       {% for c in consultations_today %}
         <tr>
           <td>{{ c.rendez_vous.date_heure|date:"H:i" }}</td>
           <td>{{ c.patient.user.get_full_name|default:c.patient.user.email }}</td>
+          <td>{{ c.rendez_vous.motif|default:"Consultation" }}</td>
           <td>
             {% if c.tension or c.poids or c.temperature %}
-              T {{ c.tension|default:"—" }} · {{ c.poids|default:"—" }} kg · {{ c.temperature|default:"—" }} °C
+              T {{ c.tension|default:"-" }} / {{ c.poids|default:"-" }} kg / {{ c.temperature|default:"-" }} C
             {% else %}
-              —
+              -
             {% endif %}
           </td>
-          <td><a class="dash-btn dash-btn--primary" style="padding:0.4rem 0.75rem;font-size:0.8rem;" href="{% url 'medecins:consultation_detail' c.pk %}">Ouvrir</a></td>
+          <td class="dash-actions-cell">
+            <a class="dash-btn dash-btn--ghost dash-btn--compact" href="{% url 'medecins:consultation_detail' c.pk %}">Dossier</a>
+            <form method="post" action="{% url 'medecins:consultation_terminer' c.pk %}" style="display:inline;">{% csrf_token %}
+              <button type="submit" class="dash-btn dash-btn--primary dash-btn--compact">Consultation terminee</button>
+            </form>
+          </td>
         </tr>
       {% empty %}
-        <tr><td colspan="4">Aucune consultation en file aujourd’hui.</td></tr>
+        <tr><td colspan="5">Aucune consultation en file aujourd'hui.</td></tr>
       {% endfor %}
     </tbody>
   </table>

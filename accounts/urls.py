@@ -2,12 +2,13 @@ from django.contrib.auth import views as auth_views
 from django.urls import path, reverse_lazy
 
 from .forms import AesculiaPasswordResetForm, AesculiaSetPasswordForm
-from .views import AesculiaLoginView, AesculiaLogoutView
+from .views import AesculiaLoginView, AesculiaLogoutView, AesculiaSignupView
 
 app_name = "auth"
 
 urlpatterns = [
     path("login/", AesculiaLoginView.as_view(), name="login"),
+    path("inscription/", AesculiaSignupView.as_view(), name="register"),
     path(
         "logout/",
         AesculiaLogoutView.as_view(next_page=reverse_lazy("landing")),

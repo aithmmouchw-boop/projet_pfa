@@ -57,6 +57,7 @@
           <a class="aes-btn aes-btn--header aes-btn--header-ghost" href="{{ portal_dashboard_url }}">{{ portal_label }}</a>
         {% else %}
           <a class="aes-btn aes-btn--header aes-btn--header-ghost" href="{% url 'auth:login' %}">Connexion</a>
+          <a class="aes-btn aes-btn--header aes-btn--header-register" href="{% url 'auth:register' %}">S'inscrire</a>
         {% endif %}
         <a class="aes-btn aes-btn--header" href="{% url 'patients:rdv_nouveau' %}">Prendre RDV</a>
       </div>
@@ -80,6 +81,7 @@
           <a class="aes-btn aes-btn--header-ghost aes-btn--block aes-btn--sq" href="{{ portal_dashboard_url }}">{{ portal_label }}</a>
         {% else %}
           <a class="aes-btn aes-btn--header-ghost aes-btn--block aes-btn--sq" href="{% url 'auth:login' %}">Connexion</a>
+          <a class="aes-btn aes-btn--header-register aes-btn--block aes-btn--sq" href="{% url 'auth:register' %}">S'inscrire</a>
         {% endif %}
       </div>
     </div>
@@ -340,6 +342,84 @@
   </section>
 
   {# —— Témoignages —— #}
+  {# -- Questions frequentes -- #}
+  <section class="aes-faq" id="questions" aria-labelledby="aes-faq-h2" data-reveal>
+    <div class="aes-faq__inner">
+      <div class="aes-faq__head">
+        <p class="aes-faq__eyebrow">Questions fr&eacute;quentes</p>
+        <h2 id="aes-faq-h2" class="aes-faq__title">Les r&eacute;ponses que nos patients demandent le plus.</h2>
+        <p class="aes-faq__lead">Avant de r&eacute;server, voici les points essentiels pour avancer avec confiance.</p>
+      </div>
+
+      <div class="aes-faq__grid">
+        <div class="aes-faq__column">
+          <details class="aes-faq__item">
+            <summary class="aes-faq__question">
+              <span>Comment prendre rendez-vous ?</span>
+              <span class="aes-faq__icon" aria-hidden="true"></span>
+            </summary>
+            <div class="aes-faq__answer">
+              <p>Vous choisissez votre sp&eacute;cialit&eacute;, le praticien souhait&eacute; et le cr&eacute;neau disponible. La demande est confirm&eacute;e clairement, avec toutes les informations utiles pour venir sereinement.</p>
+            </div>
+          </details>
+
+          <details class="aes-faq__item">
+            <summary class="aes-faq__question">
+              <span>Puis-je choisir mon praticien ?</span>
+              <span class="aes-faq__icon" aria-hidden="true"></span>
+            </summary>
+            <div class="aes-faq__answer">
+              <p>Oui. Vous pouvez s&eacute;lectionner le praticien qui vous convient. Si vous h&eacute;sitez, notre &eacute;quipe vous oriente vers le profil le plus adapt&eacute; &agrave; votre besoin.</p>
+            </div>
+          </details>
+
+          <details class="aes-faq__item">
+            <summary class="aes-faq__question">
+              <span>Quels documents dois-je apporter ?</span>
+              <span class="aes-faq__icon" aria-hidden="true"></span>
+            </summary>
+            <div class="aes-faq__answer">
+              <p>Apportez une pi&egrave;ce d'identit&eacute;, vos anciennes ordonnances, analyses, radios ou comptes rendus. Plus le praticien a d'&eacute;l&eacute;ments, plus le diagnostic peut &ecirc;tre pr&eacute;cis.</p>
+            </div>
+          </details>
+        </div>
+
+        <div class="aes-faq__column">
+          <details class="aes-faq__item">
+            <summary class="aes-faq__question">
+              <span>Puis-je modifier ou annuler mon rendez-vous ?</span>
+              <span class="aes-faq__icon" aria-hidden="true"></span>
+            </summary>
+            <div class="aes-faq__answer">
+              <p>Oui, tant que le rendez-vous n'a pas encore eu lieu. Vous pouvez nous contacter ou passer par votre espace patient afin de lib&eacute;rer le cr&eacute;neau et en choisir un autre.</p>
+            </div>
+          </details>
+
+          <details class="aes-faq__item">
+            <summary class="aes-faq__question">
+              <span>Comment se passe la premi&egrave;re consultation ?</span>
+              <span class="aes-faq__icon" aria-hidden="true"></span>
+            </summary>
+            <div class="aes-faq__answer">
+              <p>Le praticien prend le temps d'&eacute;couter vos sympt&ocirc;mes, vos ant&eacute;c&eacute;dents et vos attentes. Vous repartez avec une explication claire, un plan de soins et une ordonnance si elle est n&eacute;cessaire.</p>
+            </div>
+          </details>
+
+          <details class="aes-faq__item">
+            <summary class="aes-faq__question">
+              <span>Mes informations restent-elles confidentielles ?</span>
+              <span class="aes-faq__icon" aria-hidden="true"></span>
+            </summary>
+            <div class="aes-faq__answer">
+              <p>Oui. Vos donn&eacute;es m&eacute;dicales sont trait&eacute;es avec discr&eacute;tion et restent accessibles uniquement aux professionnels autoris&eacute;s pour assurer votre prise en charge.</p>
+            </div>
+          </details>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {# -- Temoignages -- #}
   <section class="aes-tm" id="temoignages" aria-labelledby="aes-tm-h2" data-reveal>
     <div class="aes-tm__inner">
       <h2 id="aes-tm-h2" class="aes-tm__title"><em>La confiance, témoignage après témoignage.</em></h2>

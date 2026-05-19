@@ -32,7 +32,7 @@
     });
 
     document.querySelectorAll(".field-group--float").forEach(function (group) {
-      var inp = group.querySelector("input");
+      var inp = group.querySelector("input, select, textarea");
       if (!inp) return;
       function sync() {
         if (inp.value) group.classList.add("has-value");
@@ -41,6 +41,25 @@
       inp.addEventListener("input", sync);
       inp.addEventListener("change", sync);
       sync();
+    });
+
+    document.querySelectorAll("[data-auth-register-form]").forEach(function (form) {
+      var role = form.querySelector("select[name='role']");
+      var sections = form.querySelectorAll("[data-role-fields]");
+      if (!role || !sections.length) return;
+
+      function syncRoleFields() {
+        sections.forEach(function (section) {
+          var visible = section.getAttribute("data-role-fields") === role.value;
+          section.hidden = !visible;
+          section.querySelectorAll("input, select, textarea").forEach(function (field) {
+            field.disabled = !visible;
+          });
+        });
+      }
+
+      role.addEventListener("change", syncRoleFields);
+      syncRoleFields();
     });
 
     document.querySelectorAll("[data-auth-form]").forEach(function (form) {

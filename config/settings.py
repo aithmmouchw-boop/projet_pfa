@@ -28,7 +28,7 @@ INSTALLED_APPS = [
     "rendez_vous",
     "consultations",
     "facturation",
-    "infirmier",
+    "secretaire",
     "sitepages",
 ]
 
@@ -38,6 +38,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "clinic_common.audit.SensitiveAccessAuditMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
@@ -65,7 +66,8 @@ WSGI_APPLICATION = "config.wsgi.application"
 # Django utilise le socket si HOST est un chemin absolu (voir get_connection_params).
 _db_options: dict = {
     "charset": "utf8mb4",
-    "init_command": "SET sql_mode='STRICT_TRANS_TABLES'; SET time_zone = '+00:00'",
+    # Une seule instruction : PyMySQL/MySQL peuvent mal parser plusieurs SET séparés par « ; ».
+    "init_command": "SET sql_mode='STRICT_TRANS_TABLES', time_zone='+00:00'",
 }
 
 _db_socket = os.environ.get("DB_SOCKET", "").strip()

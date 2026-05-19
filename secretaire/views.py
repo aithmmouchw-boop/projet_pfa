@@ -7,13 +7,13 @@ from django.views.generic import FormView, TemplateView
 
 from clinic_common.mixins import RoleRequiredMixin
 from consultations.models import Consultation
-from infirmier.forms import ConstantesForm
+from secretaire.forms import ConstantesForm
 from rendez_vous.models import RendezVous
 
 
-def _nav_inf(active: str) -> list[dict]:
+def _nav_sec(active: str) -> list[dict]:
     items = [
-        ("infirmier:infirmier_dashboard", "Vue d'ensemble"),
+        ("secretaire:secretaire_dashboard", "Vue d'ensemble"),
     ]
     return [
         {"label": lab, "url_name": u, "fragment": None, "active": lab == active}
@@ -32,9 +32,9 @@ def _shell(request, intro: str) -> dict:
     }
 
 
-class InfirmierDashboardView(RoleRequiredMixin, TemplateView):
+class SecretaireDashboardView(RoleRequiredMixin, TemplateView):
     required_role = "infirmier"
-    template_name = "infirmier/dashboard.html"
+    template_name = "secretaire/dashboard.html"
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
@@ -53,9 +53,9 @@ class InfirmierDashboardView(RoleRequiredMixin, TemplateView):
         )
         ctx.update(
             {
-                "role_key": "infirmier",
-                "role_title": "Infirmier·ère",
-                "dashboard_nav": _nav_inf("Vue d'ensemble"),
+                "role_key": "secretaire",
+                "role_title": "Secretaire",
+                "dashboard_nav": _nav_sec("Vue d'ensemble"),
                 "rdvs_today": rdvs,
             }
         )
@@ -85,13 +85,13 @@ class RdvMarquerArriveView(RoleRequiredMixin, View):
             messages.success(request, "Patient marqué comme arrivé.")
         else:
             messages.warning(request, "Statut incompatible pour cette action.")
-        return redirect(reverse("infirmier:infirmier_dashboard"))
+        return redirect(reverse("secretaire:secretaire_dashboard"))
 
 
 class RdvConstantesView(RoleRequiredMixin, FormView):
     required_role = "infirmier"
     form_class = ConstantesForm
-    template_name = "infirmier/constantes.html"
+    template_name = "secretaire/constantes.html"
 
     def dispatch(self, request, *args, **kwargs):
         self.rdv = get_object_or_404(RendezVous, pk=kwargs["pk"])
@@ -109,9 +109,9 @@ class RdvConstantesView(RoleRequiredMixin, FormView):
         ctx = super().get_context_data(**kwargs)
         ctx.update(
             {
-                "role_key": "infirmier",
-                "role_title": "Infirmier·ère",
-                "dashboard_nav": _nav_inf("Vue d'ensemble"),
+                "role_key": "secretaire",
+                "role_title": "Secretaire",
+                "dashboard_nav": _nav_sec("Vue d'ensemble"),
                 "rdv": self.rdv,
             }
         )
@@ -121,9 +121,9 @@ class RdvConstantesView(RoleRequiredMixin, FormView):
     def form_valid(self, form):
         if self.rdv.statut != RendezVous.Statut.ARRIVE:
             messages.error(self.request, "Le patient doit d’abord être marqué arrivé.")
-            return redirect(reverse("infirmier:infirmier_dashboard"))
+            return redirect(reverse("secretaire:secretaire_dashboard"))
         form.save()
         self.rdv.statut = RendezVous.Statut.EN_COURS
         self.rdv.save(update_fields=["statut"])
         messages.success(self.request, "Constantes enregistrées, consultation en cours.")
-        return redirect(reverse("infirmier:infirmier_dashboard"))
+        return redirect(reverse("secretaire:secretaire_dashboard"))

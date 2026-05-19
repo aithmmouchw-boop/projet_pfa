@@ -1,9 +1,33 @@
 {% extends "dashboards/base_dashboard.html" %}
 {% block dash_main %}
+<section class="dash-metrics dash-metrics--finance" aria-label="Dashboard financier">
+  <article class="dash-metric">
+    <span class="dash-metric__label">Revenus du jour</span>
+    <strong>{{ finance_stats.revenue_today|floatformat:2 }} DH</strong>
+    <small>Paiements valides aujourd'hui</small>
+  </article>
+  <article class="dash-metric">
+    <span class="dash-metric__label">Revenus mensuels</span>
+    <strong>{{ finance_stats.revenue_month|floatformat:2 }} DH</strong>
+    <small>Depuis le debut du mois</small>
+  </article>
+  <article class="dash-metric">
+    <span class="dash-metric__label">Consultations payees</span>
+    <strong>{{ finance_stats.paid_consultations }}</strong>
+    <small>Factures soldees</small>
+  </article>
+  <article class="dash-metric">
+    <span class="dash-metric__label">Consultations impayees</span>
+    <strong>{{ finance_stats.unpaid_consultations }}</strong>
+    <small>En attente de paiement</small>
+  </article>
+</section>
+
+<h2 class="dash-section-title">Consultations terminees</h2>
 <div class="dash-table-wrap">
   <table class="dash-table">
     <thead>
-      <tr><th>N°</th><th>Patient</th><th>Médecin</th><th>Total</th><th>Statut</th><th></th></tr>
+      <tr><th>N facture</th><th>Patient</th><th>Medecin</th><th>Specialite</th><th>Montant</th><th>Status</th><th></th></tr>
     </thead>
     <tbody>
       {% for f in factures %}
@@ -11,12 +35,19 @@
           <td>{{ f.numero }}</td>
           <td>{{ f.patient.user.get_full_name|default:f.patient.user.email }}</td>
           <td>Dr. {{ f.consultation.medecin.user.get_full_name|default:f.consultation.medecin.user.email }}</td>
-          <td>{{ f.total_ttc }} CHF</td>
-          <td><span class="badge badge-{{ f.statut }}">{{ f.get_statut_display }}</span></td>
-          <td><a class="dash-btn dash-btn--ghost" style="padding:0.35rem 0.65rem;font-size:0.78rem;" href="{% url 'facturation:facture_detail' f.pk %}">Détail</a></td>
+          <td>{{ f.consultation.medecin.specialite }}</td>
+          <td>{{ f.total_ttc|floatformat:2 }} DH</td>
+          <td>
+            {% if f.statut == "payee" %}
+              <span class="badge badge-payee">Paye</span>
+            {% else %}
+              <span class="badge badge-brouillon">Non paye</span>
+            {% endif %}
+          </td>
+          <td><a class="dash-btn dash-btn--ghost dash-btn--compact" href="{% url 'facturation:facture_detail' f.pk %}">Ouvrir</a></td>
         </tr>
       {% empty %}
-        <tr><td colspan="6">Aucune facture en attente.</td></tr>
+        <tr><td colspan="7">Aucune consultation terminee pour le moment.</td></tr>
       {% endfor %}
     </tbody>
   </table>
