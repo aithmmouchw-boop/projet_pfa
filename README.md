@@ -1,4 +1,4 @@
-# Aesculia — application Django
+# CLINOVA — application Django
 
 Gestion de clinique (patients, médecins, rendez-vous, facturation, etc.). Base de données **MySQL** (PyMySQL).
 
@@ -48,9 +48,9 @@ Depuis le dossier `PROJET_PYTHON` :
 
 | Rôle    | E-mail                     | Mot de passe |
 |---------|----------------------------|--------------|
-| (tous)  | `*@aesculia.local`       | `demo12345`  |
+| (tous)  | `*@CLINOVA.local`       | `demo12345`  |
 
-Exemples : `patient@aesculia.local`, `medecin@aesculia.local`, `caissier@aesculia.local`, `secretaire@aesculia.local`.
+Exemples : `patient@CLINOVA.local`, `medecin@CLINOVA.local`, `caissier@CLINOVA.local`, `secretaire@CLINOVA.local`.
 
 ## Dépannage
 

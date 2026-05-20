@@ -18,7 +18,11 @@ class Command(BaseCommand):
         pwd = "demo12345"
         specs = [
             ("patient@aesculia.local", "patient", "Pat", "Ient"),
+            ("ceour@aesculia.local", "medecin", "Wafae", "Ceour"),
+            ("ophtalmologie@aesculia.local", "medecin", "Chaimaa", "Ophta"),
             ("medecin@aesculia.local", "medecin", "Hélène", "Morel"),
+            ("cardio@aesculia.local", "medecin", "Nadia", "Cardio"),
+            ("ophtal@aesculia.local", "medecin", "Yassine", "Ophtal"),
             ("secretaire@aesculia.local", "infirmier", "Sam", "Secret"),
             ("caissier@aesculia.local", "caissier", "Cai", "Ssier"),
         ]
@@ -50,14 +54,26 @@ class Command(BaseCommand):
             },
         )
 
-        mu = User.objects.get(email="medecin@aesculia.local")
-        Medecin.objects.get_or_create(
-            user=mu,
-            defaults={
-                "specialite": "Médecine interne",
-                "tarif_consultation": Decimal("180.00"),
-                "actif": True,
-            },
-        )
+        medecins = [
+            ("medecin@aesculia.local", "Medecine generale", Decimal("180.00")),
+            ("ceour@aesculia.local", "Cardiologie", Decimal("400.00")),
+            ("ophtalmologie@aesculia.local", "Ophtalmologie", Decimal("300.00")),
+            ("cardio@aesculia.local", "Cardiologie", Decimal("220.00")),
+            ("ophtal@aesculia.local", "Ophtalmologie", Decimal("200.00")),
+        ]
+        for email, specialite, tarif in medecins:
+            mu = User.objects.get(email=email)
+            medecin, _ = Medecin.objects.get_or_create(
+                user=mu,
+                defaults={
+                    "specialite": specialite,
+                    "tarif_consultation": tarif,
+                    "actif": True,
+                },
+            )
+            medecin.specialite = specialite
+            medecin.tarif_consultation = tarif
+            medecin.actif = True
+            medecin.save()
 
         self.stdout.write(self.style.NOTICE("Mot de passe : demo12345"))

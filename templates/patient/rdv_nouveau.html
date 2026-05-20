@@ -1,47 +1,119 @@
 {% extends "dashboards/base_dashboard.html" %}
 {% block dash_main %}
 {% if not medecin %}
-  <h2 class="dash-requests__title">1 — Choisir un médecin</h2>
-  <div class="dash-grid">
+  <section class="booking-head">
+    <div>
+      <span class="booking-head__eyebrow">Prendre rendez-vous</span>
+      <h2>Choisissez votre medecin</h2>
+      <p>Recherchez par specialite ou par nom. Les tarifs ne sont pas affiches dans l'espace patient.</p>
+    </div>
+  </section>
+
+  <form method="get" class="doctor-search" aria-label="Recherche medecin">
+    <label>
+      <span>Recherche</span>
+      <input type="search" name="q" value="{{ search_query }}" placeholder="Ex. cardiologie, pediatrie, Dr..." autocomplete="off">
+    </label>
+    <label>
+      <span>Specialite</span>
+      <select name="specialite">
+        <option value="">Toutes les specialites</option>
+        {% for s in specialites %}
+          <option value="{{ s }}" {% if selected_specialite == s %}selected{% endif %}>{{ s }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <button type="submit" class="dash-btn dash-btn--primary">Filtrer</button>
+    {% if search_query or selected_specialite %}
+      <a class="dash-btn dash-btn--ghost" href="{% url 'patients:rdv_nouveau' %}">Reinitialiser</a>
+    {% endif %}
+  </form>
+
+  <div class="doctor-grid">
     {% for m in medecins %}
-      <article class="dash-card">
-        <h2>Dr. {{ m.user.get_full_name|default:m.user.email }}</h2>
-        <p>{{ m.specialite }}</p>
-        <p><strong>{{ m.tarif_consultation }} CHF</strong></p>
-        <form method="post">{% csrf_token %}
+      <article class="doctor-card">
+        <div class="doctor-card__media doctor-card__media--cabinet">
+          <img src="{{ m.cabinet_photo_url }}" alt="Cabinet du Dr. {{ m.user.get_full_name|default:m.user.email }}">
+          <div class="doctor-card__portrait">
+            {% if m.photo_url %}
+              <img src="{{ m.photo_url }}" alt="Dr. {{ m.user.get_full_name|default:m.user.email }}">
+            {% else %}
+              <div class="doctor-card__avatar" aria-hidden="true">
+                <span>
+                  {% if m.user.first_name or m.user.last_name %}
+                    {{ m.user.first_name|first }}{{ m.user.last_name|first }}
+                  {% else %}
+                    {{ m.user.email|first }}
+                  {% endif %}
+                </span>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+        <div class="doctor-card__body">
+          <span class="doctor-card__specialty">{{ m.specialite }}</span>
+          <h3>Dr. {{ m.user.get_full_name|default:m.user.email }}</h3>
+          <p>{{ m.bio|default:"Suivi medical personnalise et consultation adaptee a votre besoin."|truncatechars:120 }}</p>
+        </div>
+        <form method="post" class="doctor-card__action">{% csrf_token %}
           <input type="hidden" name="medecin_id" value="{{ m.pk }}">
-          <button type="submit" class="dash-btn dash-btn--primary" style="margin-top:0.5rem;">Choisir</button>
+          <button type="submit" class="dash-btn dash-btn--primary">Choisir ce medecin</button>
         </form>
       </article>
     {% empty %}
-      <p>Aucun médecin actif pour le moment.</p>
+      <p class="dash-requests__empty">Aucun medecin ne correspond a votre recherche.</p>
     {% endfor %}
   </div>
 {% elif medecin and not slot_iso %}
-  <h2 class="dash-requests__title">2 — Choisir un créneau — Dr. {{ medecin.user.get_full_name|default:medecin.user.email }}</h2>
-  {% for j in jours %}
-    <h3 style="font-family:var(--font-display);font-weight:400;margin:1.5rem 0 0.5rem;">{{ j.date|date:"l d F" }}</h3>
-    <div style="display:flex;flex-wrap:wrap;gap:0.5rem;">
-      {% for s in j.slots %}
-        <form method="post" style="display:inline;">{% csrf_token %}
-          <input type="hidden" name="medecin_id" value="{{ medecin.pk }}">
-          <input type="hidden" name="slot_iso" value="{{ s.iso }}">
-          <button type="submit" class="dash-btn dash-btn--ghost" style="font-size:0.82rem;">{{ s.dt|date:"H:i" }}</button>
-        </form>
-      {% endfor %}
+  <section class="booking-head booking-head--compact">
+    <div class="doctor-mini">
+      <img src="{{ medecin.photo_url }}" alt="Dr. {{ medecin.user.get_full_name|default:medecin.user.email }}">
+      <div>
+        <span class="booking-head__eyebrow">Choisir un creneau</span>
+        <h2>Dr. {{ medecin.user.get_full_name|default:medecin.user.email }}</h2>
+        <p>{{ medecin.specialite }}</p>
+      </div>
     </div>
+    <a class="dash-btn dash-btn--ghost" href="{% url 'patients:rdv_nouveau' %}">Changer de medecin</a>
+  </section>
+
+  {% for j in jours %}
+    <section class="slot-day">
+      <h3>{{ j.date|date:"l d F" }}</h3>
+      <div class="slot-grid">
+        {% for s in j.slots %}
+          {% if s.occupe %}
+            <button type="button" class="slot-btn slot-btn--busy" disabled>
+              {{ s.dt|date:"H:i" }} <span>Occupe</span>
+            </button>
+          {% else %}
+            <form method="post">{% csrf_token %}
+              <input type="hidden" name="medecin_id" value="{{ medecin.pk }}">
+              <input type="hidden" name="slot_iso" value="{{ s.iso }}">
+              <button type="submit" class="slot-btn">{{ s.dt|date:"H:i" }}</button>
+            </form>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </section>
   {% empty %}
-    <p>Aucun créneau disponible sur les 14 prochains jours pour ce praticien.</p>
+    <p class="dash-requests__empty">Aucun creneau disponible sur les 14 prochains jours pour ce praticien.</p>
   {% endfor %}
 {% else %}
-  <h2 class="dash-requests__title">3 — Confirmer</h2>
-  <p>Dr. {{ medecin.user.get_full_name|default:medecin.user.email }} — {{ slot_iso|slice:":16" }}…</p>
-  <form method="post" class="dash-card" style="margin-top:1rem;padding:1.25rem;">
+  <section class="booking-head booking-head--compact">
+    <div>
+      <span class="booking-head__eyebrow">Confirmation</span>
+      <h2>Confirmer le rendez-vous</h2>
+      <p>Dr. {{ medecin.user.get_full_name|default:medecin.user.email }} - {{ slot_iso|slice:":16" }}</p>
+    </div>
+  </section>
+
+  <form method="post" class="dash-card booking-confirm">
     {% csrf_token %}
     <input type="hidden" name="medecin_id" value="{{ medecin.pk }}">
     <input type="hidden" name="slot_iso" value="{{ slot_iso }}">
     {{ motif_form.as_p }}
-    <button type="submit" class="dash-btn dash-btn--primary" style="margin-top:1rem;">Confirmer le RDV</button>
+    <button type="submit" class="dash-btn dash-btn--primary">Confirmer le RDV</button>
   </form>
 {% endif %}
 {% endblock %}

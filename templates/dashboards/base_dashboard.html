@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title %}{{ role_title }} · {% if clinic %}{{ clinic.name }}{% else %}AESCULIA{% endif %}{% endblock %}
+{% block title %}{{ role_title }} · {% if clinic %}{{ clinic.name }}{% else %}CLINOVA{% endif %}{% endblock %}
 {% block body_class %}dash-body{% endblock %}
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/auth.css' %}">
-<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}?v=clinova-care-20260519">
 {% endblock %}
 {% block content %}
 <a href="#dash-main" class="skip-link">Aller au contenu</a>
@@ -18,7 +18,7 @@
 <div class="dash-app" data-role="{{ role_key }}">
   <aside class="dash-sidebar" aria-label="Navigation principale">
     <a class="dash-brand" href="{% url 'landing' %}">
-      <span class="dash-brand__mark">Aesculia</span>
+      <span class="dash-brand__mark">Clinova</span>
       <span class="dash-brand__role">Espace {{ role_title }}</span>
     </a>
     <nav class="dash-nav">

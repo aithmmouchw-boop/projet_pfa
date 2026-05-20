@@ -11,7 +11,7 @@
 </div>
 <p class="auth-kicker">Espace Professionnel</p>
 <h1 class="auth-h1">Bon retour.</h1>
-<p class="auth-sub">Connectez-vous à votre espace Aesculia.</p>
+<p class="auth-sub">Connectez-vous à votre espace CLINOVA.</p>
 
 <form method="post" action="{% url 'auth:login' %}" class="auth-form{% if form.errors %} auth-form--error{% endif %}" id="auth-login-form" data-auth-form novalidate>
   {% csrf_token %}
@@ -75,5 +75,5 @@
 <div class="auth-divider" role="presentation"></div>
 <p class="auth-footnote">Pas encore de compte ? <a class="auth-link-accent" href="{% url 'auth:register' %}">S'inscrire <span aria-hidden="true">-&gt;</span></a></p>
 
-<p class="auth-legal">© {% now "Y" %} AESCULIA · Mentions légales · Politique de confidentialité</p>
+<p class="auth-legal">© {% now "Y" %} CLINOVA · Mentions légales · Politique de confidentialité</p>
 {% endblock %}

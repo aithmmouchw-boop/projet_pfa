@@ -1,7 +1,8 @@
 from decimal import Decimal
 
 from django.contrib import messages
-from django.db.models import Sum
+from django.db.models import DecimalField, F, Prefetch, Q, Sum, Value
+from django.db.models.functions import Coalesce
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.utils import timezone
@@ -11,7 +12,8 @@ from clinic_common.audit import log_activity
 from clinic_common.mixins import RoleRequiredMixin
 from clinic_common.models import SystemActivity
 from facturation.forms import LigneFactureAjoutForm, PaiementForm
-from facturation.models import Facture, Paiement
+from facturation.models import Facture, LigneFacture, Paiement
+from facturation.utils import refresh_facture_totals_and_status
 
 
 def _nav_caissier(active: str) -> list[dict]:
@@ -30,7 +32,7 @@ def _shell(request, intro: str) -> dict:
 
     u = request.user
     return {
-        "clinic": SimpleNamespace(name="AESCULIA"),
+        "clinic": SimpleNamespace(name="CLINOVA"),
         "user_display": (u.get_full_name() or "").strip() or u.email,
         "dashboard_intro": intro,
     }
@@ -40,17 +42,62 @@ def _money_total(queryset) -> Decimal:
     return queryset.aggregate(total=Sum("montant"))["total"] or Decimal("0.00")
 
 
+def _factures_with_paid_total():
+    return (
+        Facture.objects.filter(consultation__termine=True)
+        .exclude(statut=Facture.Statut.ANNULEE)
+        .annotate(
+            total_paye_calc=Coalesce(
+                Sum("paiements__montant", filter=Q(paiements__valide=True)),
+                Value(
+                    Decimal("0.00"),
+                    output_field=DecimalField(max_digits=10, decimal_places=2),
+                ),
+            )
+        )
+    )
+
+
+def _factures_queryset():
+    return Facture.objects.select_related(
+        "patient__user",
+        "consultation__medecin__user",
+    ).prefetch_related(
+        Prefetch(
+            "paiements",
+            queryset=Paiement.objects.filter(valide=True).order_by("-date"),
+            to_attr="paiements_valides",
+        )
+    )
+
+
+def _attach_payment_summary(factures):
+    prepared = list(factures)
+    for facture in prepared:
+        paiements = getattr(facture, "paiements_valides", [])
+        total_paye = sum((p.montant for p in paiements), Decimal("0.00"))
+        reste = facture.total_ttc - total_paye
+        facture.total_paye_dashboard = total_paye
+        facture.reste_dashboard = max(reste, Decimal("0.00"))
+        facture.latest_payment_dashboard = paiements[0] if paiements else None
+    return prepared
+
+
 def _finance_stats() -> dict:
     today = timezone.localdate()
     month_start = today.replace(day=1)
     valid_payments = Paiement.objects.filter(valide=True)
+    factures = _factures_with_paid_total()
+    paid_facture_ids = list(
+        factures.filter(total_ttc__gt=0)
+        .filter(Q(statut=Facture.Statut.PAYEE) | Q(total_paye_calc__gte=F("total_ttc")))
+        .values_list("pk", flat=True)
+    )
     return {
         "revenue_today": _money_total(valid_payments.filter(date__date=today)),
         "revenue_month": _money_total(valid_payments.filter(date__date__gte=month_start)),
-        "paid_consultations": Facture.objects.filter(statut=Facture.Statut.PAYEE).count(),
-        "unpaid_consultations": Facture.objects.filter(
-            statut__in=[Facture.Statut.BROUILLON, Facture.Statut.EMISE]
-        ).count(),
+        "paid_consultations": len(paid_facture_ids),
+        "unpaid_consultations": factures.exclude(pk__in=paid_facture_ids).count(),
     }
 
 
@@ -61,23 +108,32 @@ class CaissierDashboardView(RoleRequiredMixin, ListView):
 
     def get_queryset(self):
         return (
-            Facture.objects.filter(consultation__termine=True)
-            .exclude(statut=Facture.Statut.ANNULEE)
-            .select_related("patient__user", "consultation__medecin__user")
+            _factures_queryset()
+            .filter(
+                consultation__termine=True,
+                statut__in=[Facture.Statut.BROUILLON, Facture.Statut.EMISE],
+            )
             .order_by("-created_at")
         )
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
+        factures = _attach_payment_summary(ctx["factures"])
+        historique_factures = _attach_payment_summary(
+            _factures_queryset().filter(consultation__termine=True).order_by("-created_at")[:50]
+        )
         ctx.update(
             {
                 "role_key": "caissier",
                 "role_title": "Caissier",
                 "dashboard_nav": _nav_caissier("Vue d'ensemble"),
                 "finance_stats": _finance_stats(),
+                "factures": factures,
+                "object_list": factures,
+                "historique_factures": historique_factures,
             }
         )
-        ctx.update(_shell(self.request, "Consultations terminees, paiements et revenus."))
+        ctx.update(_shell(self.request, "Paiements a encaisser et historique des factures."))
         return ctx
 
 
@@ -129,10 +185,26 @@ class FactureDetailView(RoleRequiredMixin, TemplateView):
                 ligne = form.save(commit=False)
                 ligne.facture = facture
                 ligne.save()
-                facture.calculer_total()
+                refresh_facture_totals_and_status(facture)
                 messages.success(request, "Ligne ajoutee.")
             else:
                 messages.error(request, "Ligne invalide.")
+            return redirect(reverse("facturation:facture_detail", kwargs={"pk": facture.pk}))
+        if "update_ligne" in request.POST:
+            ligne = get_object_or_404(LigneFacture, pk=request.POST.get("ligne_id"), facture=facture)
+            form = LigneFactureAjoutForm(request.POST, instance=ligne)
+            if form.is_valid():
+                form.save()
+                refresh_facture_totals_and_status(facture)
+                messages.success(request, "Ligne modifiee.")
+            else:
+                messages.error(request, "Modification de ligne invalide.")
+            return redirect(reverse("facturation:facture_detail", kwargs={"pk": facture.pk}))
+        if "delete_ligne" in request.POST:
+            ligne = get_object_or_404(LigneFacture, pk=request.POST.get("ligne_id"), facture=facture)
+            ligne.delete()
+            refresh_facture_totals_and_status(facture)
+            messages.success(request, "Ligne supprimee.")
             return redirect(reverse("facturation:facture_detail", kwargs={"pk": facture.pk}))
         if "encaisser" in request.POST:
             form = PaiementForm(request.POST)
@@ -153,11 +225,11 @@ class FactureDetailView(RoleRequiredMixin, TemplateView):
                         "mode": paiement.mode,
                     },
                 )
-                if facture.total_paye_valide() >= facture.total_ttc:
-                    facture.statut = Facture.Statut.PAYEE
-                    facture.save(update_fields=["statut"])
+                refresh_facture_totals_and_status(facture)
+                facture.refresh_from_db()
+                if facture.statut == Facture.Statut.PAYEE:
                     messages.success(request, "Paiement enregistre - facture soldee.")
-                    return redirect(reverse("facturation:facture_recu", kwargs={"pk": facture.pk}))
+                    return redirect(reverse("facturation:caissier_dashboard"))
                 messages.success(request, "Paiement enregistre.")
             else:
                 messages.error(request, "Montant ou mode invalide.")

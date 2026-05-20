@@ -12,7 +12,7 @@
 <a class="auth-back" href="{% url 'landing' %}">Retour a l'accueil</a>
 <p class="auth-kicker">Nouveau compte</p>
 <h1 class="auth-h1 auth-h1--narrow">S'inscrire.</h1>
-<p class="auth-sub">Creez votre acces Aesculia et choisissez votre role.</p>
+<p class="auth-sub">Creez votre acces CLINOVA comme patient ou medecin.</p>
 
 <form method="post" action="{% url 'auth:register' %}" class="auth-form{% if form.errors %} auth-form--error{% endif %}" id="auth-register-form" data-auth-form data-auth-register-form novalidate>
   {% csrf_token %}
@@ -173,5 +173,5 @@
 <div class="auth-divider" role="presentation"></div>
 <p class="auth-footnote">Vous avez deja un compte ? <a class="auth-link-accent" href="{% url 'auth:login' %}">Se connecter <span aria-hidden="true">-&gt;</span></a></p>
 
-<p class="auth-legal">(c) {% now "Y" %} AESCULIA - Mentions legales - Politique de confidentialite</p>
+<p class="auth-legal">(c) {% now "Y" %} CLINOVA - Mentions legales - Politique de confidentialite</p>
 {% endblock %}

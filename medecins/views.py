@@ -4,7 +4,6 @@ from django.contrib import messages
 from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
-from django.utils import timezone
 from django.views import View
 from django.views.generic import TemplateView
 
@@ -34,7 +33,7 @@ def _shell(request, intro: str) -> dict:
 
     u = request.user
     return {
-        "clinic": SimpleNamespace(name="AESCULIA"),
+        "clinic": SimpleNamespace(name="CLINOVA"),
         "user_display": (u.get_full_name() or "").strip() or u.email,
         "dashboard_intro": intro,
     }
@@ -67,26 +66,30 @@ class MedecinDashboardView(MedecinAccountMixin, TemplateView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         med = self.request.medecin_profile  # type: ignore[attr-defined]
-        today = timezone.localdate()
         consultations = (
             Consultation.objects.filter(
                 medecin=med,
                 termine=False,
-                rendez_vous__date_heure__date=today,
             )
             .select_related("patient__user", "rendez_vous")
             .order_by("rendez_vous__date_heure")
         )
+        historique_patients = (
+            Consultation.objects.filter(medecin=med, termine=True)
+            .select_related("patient__user", "rendez_vous")
+            .order_by("-updated_at", "-date")[:12]
+        )
         ctx.update(
             {
                 "role_key": "medecin",
-                "role_title": "Médecin",
+                "role_title": "Medecin",
                 "dashboard_nav": _nav_med("Vue d'ensemble"),
                 "consultations_today": consultations,
                 "consultations_waiting_count": consultations.count(),
+                "historique_patients": historique_patients,
             }
         )
-        ctx.update(_shell(self.request, "File du jour et consultations ouvertes."))
+        ctx.update(_shell(self.request, "File des patients et consultations ouvertes."))
         return ctx
 
 
@@ -125,7 +128,6 @@ class ConsultationDetailView(MedecinAccountMixin, TemplateView):
     template_name = "medecin/consultation.html"
 
     def dispatch(self, request, *args, **kwargs):
-        # Let mixin run first to set medecin_profile
         if not request.user.is_authenticated or getattr(request.user, "role", None) != "medecin":
             return super().dispatch(request, *args, **kwargs)
         try:
@@ -149,7 +151,8 @@ class ConsultationDetailView(MedecinAccountMixin, TemplateView):
         ctx = super().get_context_data(**kwargs)
         patient = self.consultation.patient
         form = kwargs.get("form") or ConsultationMedecinForm(
-            instance=self.consultation
+            instance=self.consultation,
+            specialite=self.consultation.medecin.specialite,
         )
         formset = kwargs.get("formset") or LigneOrdonnanceFormSet(
             instance=self.ordonnance
@@ -157,7 +160,7 @@ class ConsultationDetailView(MedecinAccountMixin, TemplateView):
         ctx.update(
             {
                 "role_key": "medecin",
-                "role_title": "Médecin",
+                "role_title": "Medecin",
                 "dashboard_nav": _nav_med("Vue d'ensemble"),
                 "consultation": self.consultation,
                 "patient": patient,
@@ -165,16 +168,24 @@ class ConsultationDetailView(MedecinAccountMixin, TemplateView):
                 "ordonnance": self.ordonnance,
                 "form": form,
                 "formset": formset,
-                "historique": patient.consultations.filter(termine=True)
+                "historique": patient.consultations.filter(
+                    medecin=self.request.medecin_profile,
+                    termine=True,
+                )
+                .exclude(pk=self.consultation.pk)
                 .select_related("medecin__user")
-                .order_by("-date")[:10],
+                .order_by("-updated_at", "-date")[:10],
             }
         )
         ctx.update(_shell(self.request, "Saisie clinique et ordonnance."))
         return ctx
 
     def post(self, request, *args, **kwargs):
-        form = ConsultationMedecinForm(request.POST, instance=self.consultation)
+        form = ConsultationMedecinForm(
+            request.POST,
+            instance=self.consultation,
+            specialite=self.consultation.medecin.specialite,
+        )
         formset = LigneOrdonnanceFormSet(request.POST, instance=self.ordonnance)
         if not form.is_valid() or not formset.is_valid():
             ctx = self.get_context_data(form=form, formset=formset)
@@ -200,6 +211,6 @@ class ConsultationDetailView(MedecinAccountMixin, TemplateView):
             },
         )
         messages.success(
-            self.request, "Consultation terminée et facture brouillon créée."
+            self.request, "Consultation terminee et facture brouillon creee."
         )
         return redirect(reverse("medecins:medecin_dashboard"))

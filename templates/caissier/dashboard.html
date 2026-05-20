@@ -23,11 +23,11 @@
   </article>
 </section>
 
-<h2 class="dash-section-title">Consultations terminees</h2>
+<h2 class="dash-section-title">Factures a encaisser</h2>
 <div class="dash-table-wrap">
   <table class="dash-table">
     <thead>
-      <tr><th>N facture</th><th>Patient</th><th>Medecin</th><th>Specialite</th><th>Montant</th><th>Status</th><th></th></tr>
+      <tr><th>N facture</th><th>Patient</th><th>Medecin</th><th>Specialite</th><th>Montant</th><th>Paye</th><th>Reste</th><th>Status</th><th></th></tr>
     </thead>
     <tbody>
       {% for f in factures %}
@@ -37,9 +37,11 @@
           <td>Dr. {{ f.consultation.medecin.user.get_full_name|default:f.consultation.medecin.user.email }}</td>
           <td>{{ f.consultation.medecin.specialite }}</td>
           <td>{{ f.total_ttc|floatformat:2 }} DH</td>
+          <td>{{ f.total_paye_dashboard|floatformat:2 }} DH</td>
+          <td>{{ f.reste_dashboard|floatformat:2 }} DH</td>
           <td>
-            {% if f.statut == "payee" %}
-              <span class="badge badge-payee">Paye</span>
+            {% if f.statut == "emise" %}
+              <span class="badge badge-emise">Emise</span>
             {% else %}
               <span class="badge badge-brouillon">Non paye</span>
             {% endif %}
@@ -47,7 +49,48 @@
           <td><a class="dash-btn dash-btn--ghost dash-btn--compact" href="{% url 'facturation:facture_detail' f.pk %}">Ouvrir</a></td>
         </tr>
       {% empty %}
-        <tr><td colspan="7">Aucune consultation terminee pour le moment.</td></tr>
+        <tr><td colspan="9">Aucune facture en attente de paiement.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<h2 class="dash-section-title">Historique des factures</h2>
+<div class="dash-table-wrap">
+  <table class="dash-table">
+    <thead>
+      <tr><th>Date</th><th>N facture</th><th>Patient</th><th>Medecin</th><th>Total</th><th>Paye</th><th>Reste</th><th>Status</th><th></th></tr>
+    </thead>
+    <tbody>
+      {% for f in historique_factures %}
+        <tr>
+          <td>{{ f.created_at|date:"d/m/Y H:i" }}</td>
+          <td>{{ f.numero }}</td>
+          <td>{{ f.patient.user.get_full_name|default:f.patient.user.email }}</td>
+          <td>Dr. {{ f.consultation.medecin.user.get_full_name|default:f.consultation.medecin.user.email }}</td>
+          <td>{{ f.total_ttc|floatformat:2 }} DH</td>
+          <td>{{ f.total_paye_dashboard|floatformat:2 }} DH</td>
+          <td>{{ f.reste_dashboard|floatformat:2 }} DH</td>
+          <td>
+            {% if f.statut == "payee" %}
+              <span class="badge badge-payee">Paye</span>
+            {% elif f.statut == "annulee" %}
+              <span class="badge badge-annulee">Annulee</span>
+            {% elif f.statut == "emise" %}
+              <span class="badge badge-emise">Emise</span>
+            {% else %}
+              <span class="badge badge-brouillon">Brouillon</span>
+            {% endif %}
+          </td>
+          <td class="dash-actions-cell">
+            <a class="dash-btn dash-btn--ghost dash-btn--compact" href="{% url 'facturation:facture_detail' f.pk %}">Ouvrir</a>
+            {% if f.statut == "payee" %}
+              <a class="dash-btn dash-btn--primary dash-btn--compact" href="{% url 'facturation:facture_recu' f.pk %}">Recu</a>
+            {% endif %}
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="9">Aucune facture dans l'historique.</td></tr>
       {% endfor %}
     </tbody>
   </table>

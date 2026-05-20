@@ -1,19 +1,19 @@
 {% extends "admin/base.html" %}
 {% load i18n static %}
 
-{% block title %}{{ title }} | Aesculia Admin{% endblock %}
+{% block title %}{{ title }} | Clinova Admin{% endblock %}
 
 {% block extrastyle %}
 {{ block.super }}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="{% static 'css/admin_aesculia.css' %}">
+<link rel="stylesheet" href="{% static 'css/admin_aesculia.css' %}?v=admin-dashboard-modern-20260519">
 {% endblock %}
 
 {% block branding %}
 <div class="aes-admin-brand">
-  <a id="site-name" href="{% url 'admin:index' %}">Aesculia</a>
+  <a id="site-name" href="{% url 'admin:index' %}">Clinova</a>
   <span>Administration clinique</span>
 </div>
 {% if has_permission %}

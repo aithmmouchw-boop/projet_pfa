@@ -1,29 +1,73 @@
 {% extends "dashboards/base_dashboard.html" %}
 {% block dash_main %}
+<section class="secretary-doctors" aria-labelledby="secretary-doctors-title">
+  <div class="secretary-doctors__head">
+    <div>
+      <span class="booking-head__eyebrow">Medecins</span>
+      <h2 id="secretary-doctors-title" class="dash-section-title">Choisir un medecin</h2>
+    </div>
+    <a class="dash-btn {% if not selected_medecin %}dash-btn--primary{% else %}dash-btn--ghost{% endif %} dash-btn--compact" href="{% url 'secretaire:secretaire_dashboard' %}">Tous</a>
+  </div>
+
+  <div class="secretary-doctors__grid">
+    {% for m in medecins %}
+      <a class="secretary-doctor {% if selected_medecin and selected_medecin.pk == m.pk %}is-active{% endif %}" href="{% url 'secretaire:secretaire_dashboard' %}?medecin={{ m.pk }}">
+        <span class="secretary-doctor__name">Dr. {{ m.user.get_full_name|default:m.user.email }}</span>
+        <span class="secretary-doctor__spec">{{ m.specialite }}</span>
+        <span class="secretary-doctor__meta">{{ m.rdv_total }} RDV / {{ m.rdv_a_preparer }} a preparer</span>
+      </a>
+    {% empty %}
+      <p class="dash-requests__empty">Aucun medecin actif.</p>
+    {% endfor %}
+  </div>
+</section>
+
+<h2 class="dash-section-title">
+  {% if selected_medecin %}
+    Rendez-vous de Dr. {{ selected_medecin.user.get_full_name|default:selected_medecin.user.email }}
+  {% else %}
+    Tous les rendez-vous
+  {% endif %}
+</h2>
+
 <div class="dash-table-wrap">
   <table class="dash-table">
     <thead>
-      <tr><th>Heure</th><th>Patient</th><th>Médecin</th><th>Statut</th><th>Actions</th></tr>
+      <tr><th>Date</th><th>Heure</th><th>Patient</th><th>Medecin</th><th>Motif</th><th>Constantes</th><th>Statut</th><th>Actions</th></tr>
     </thead>
     <tbody>
       {% for r in rdvs_today %}
         <tr>
+          <td>{{ r.date_heure|date:"d/m/Y" }}</td>
           <td>{{ r.date_heure|date:"H:i" }}</td>
           <td>{{ r.patient.user.get_full_name|default:r.patient.user.email }}</td>
           <td>Dr. {{ r.medecin.user.get_full_name|default:r.medecin.user.email }}</td>
-          <td><span class="badge badge-{{ r.statut }}">{{ r.get_statut_display }}</span></td>
+          <td>{{ r.motif|default:"Consultation" }}</td>
           <td>
-            {% if r.statut == "planifie" or r.statut == "confirme" %}
-              <form method="post" action="{% url 'secretaire:rdv_arriver' r.pk %}" style="display:inline;">{% csrf_token %}
-                <button type="submit" class="dash-btn dash-btn--primary" style="padding:0.35rem 0.65rem;font-size:0.78rem;">Marquer arrivé</button>
+            {% if r.consultation_obj %}
+              T {{ r.consultation_obj.tension|default:"-" }} / {{ r.consultation_obj.poids|default:"-" }} kg / {{ r.consultation_obj.temperature|default:"-" }} C
+            {% else %}
+              -
+            {% endif %}
+          </td>
+          <td><span class="badge badge-{{ r.statut }}">{{ r.get_statut_display }}</span></td>
+          <td class="dash-actions-cell">
+            {% if r.can_mark_arrived %}
+              <form method="post" action="{% url 'secretaire:rdv_arriver' r.pk %}{% if selected_medecin %}?medecin={{ selected_medecin.pk }}{% endif %}" style="display:inline;">{% csrf_token %}
+                <button type="submit" class="dash-btn dash-btn--primary dash-btn--compact">Marquer arrive</button>
               </form>
-            {% elif r.statut == "arrive" %}
-              <a class="dash-btn dash-btn--ghost" style="padding:0.35rem 0.65rem;font-size:0.78rem;" href="{% url 'secretaire:rdv_constantes' r.pk %}">Saisir constantes</a>
+            {% endif %}
+            {% if r.can_saisir_constantes %}
+              <a class="dash-btn dash-btn--ghost dash-btn--compact" href="{% url 'secretaire:rdv_constantes' r.pk %}{% if selected_medecin %}?medecin={{ selected_medecin.pk }}{% endif %}">
+                {% if r.statut == "en_cours" %}Modifier constantes{% else %}Saisir constantes{% endif %}
+              </a>
+            {% elif not r.can_mark_arrived %}
+              <span class="dash-muted">Aucune action</span>
             {% endif %}
           </td>
         </tr>
       {% empty %}
-        <tr><td colspan="5">Aucune arrivée prévue aujourd’hui.</td></tr>
+        <tr><td colspan="8">Aucun rendez-vous pour ce medecin.</td></tr>
       {% endfor %}
     </tbody>
   </table>

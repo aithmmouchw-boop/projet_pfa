@@ -1,40 +1,87 @@
 {% extends "dashboards/base_dashboard.html" %}
 {% block dash_main %}
-<div style="display:grid;grid-template-columns:1fr 1.2fr;gap:1.5rem;align-items:start;" class="med-consult-grid">
-  <div class="dash-card">
-    <h2 style="font-family:var(--font-display);font-weight:400;">Patient</h2>
-    <p><strong>{{ patient.user.get_full_name|default:patient.user.email }}</strong></p>
-    <p>N° dossier {{ patient.num_dossier }}</p>
-    <hr style="border:none;border-top:1px solid var(--border);margin:1rem 0;">
-    <p><strong>Antécédents</strong></p>
-    <p style="font-size:0.9rem;color:var(--text-muted);">{{ dossier.antecedents|default:"—"|linebreaksbr }}</p>
-    <p><strong>Allergies</strong></p>
-    <p style="font-size:0.9rem;color:var(--text-muted);">{{ dossier.allergies|default:"—"|linebreaksbr }}</p>
-    <p><strong>Constantes</strong></p>
-    <p style="font-size:0.9rem;">Tension {{ consultation.tension|default:"—" }} · Poids {{ consultation.poids|default:"—" }} kg · Temp. {{ consultation.temperature|default:"—" }} °C</p>
-    <h3 style="font-family:var(--font-display);font-size:1.1rem;margin-top:1rem;">Historique</h3>
-    <ul style="font-size:0.85rem;color:var(--text-muted);padding-left:1.1rem;">
-      {% for h in historique %}
-        <li>{{ h.date|date:"d/m/Y" }} — {{ h.diagnostic|default:"(sans diagnostic)"|truncatechars:50 }}</li>
-      {% empty %}
-        <li>—</li>
-      {% endfor %}
-    </ul>
-  </div>
-  <div class="dash-card">
-    <h2 style="font-family:var(--font-display);font-weight:400;">Consultation</h2>
+<div class="clinical-layout">
+  <aside class="clinical-side">
+    <section class="dash-card">
+      <h2>Patient</h2>
+      <p><strong>{{ patient.user.get_full_name|default:patient.user.email }}</strong></p>
+      <p>N dossier {{ patient.num_dossier }}</p>
+      <hr>
+      <p><strong>Antecedents</strong></p>
+      <p>{{ dossier.antecedents|default:"-"|linebreaksbr }}</p>
+      <p><strong>Allergies</strong></p>
+      <p>{{ dossier.allergies|default:"-"|linebreaksbr }}</p>
+      <p><strong>Constantes</strong></p>
+      <p>Tension {{ consultation.tension|default:"-" }} / Poids {{ consultation.poids|default:"-" }} kg / Temp. {{ consultation.temperature|default:"-" }} C</p>
+    </section>
+
+    <section class="risk-panel risk-panel--{{ consultation.risk_level }}">
+      <div>
+        <span class="medical-intro__eyebrow">Analyse IA</span>
+        <h2>Risk score</h2>
+        <p>Le score est recalcule automatiquement quand vous enregistrez la consultation.</p>
+      </div>
+      <div class="risk-score-card">
+        <strong>{{ consultation.risk_score }}</strong>
+        <span>{{ consultation.risk_label }}</span>
+        <div class="risk-meter" style="--risk: {{ consultation.risk_percent }}%;"><i></i></div>
+      </div>
+    </section>
+
+    <section class="dash-card">
+      <h2>Historique</h2>
+      <ul class="clinical-history">
+        {% for h in historique %}
+          <li>
+            <span>{{ h.updated_at|date:"d/m/Y H:i" }}</span>
+            <strong>{{ h.risk_score }}</strong>
+            <em>{{ h.compte_rendu|default:h.diagnostic|default:"Sans diagnostic"|truncatechars:70 }}</em>
+          </li>
+        {% empty %}
+          <li>Aucun historique.</li>
+        {% endfor %}
+      </ul>
+    </section>
+  </aside>
+
+  <section class="dash-card clinical-form">
+    <h2>Formulaire medical</h2>
+    <p class="clinical-form__lead">
+      Formulaire {{ form.specialite_label }} : choisissez Oui ou Non pour chaque element clinique.
+      L'ordonnance reste en saisie libre.
+    </p>
     <form method="post">{% csrf_token %}
-      {{ form.as_p }}
-      <h3 style="font-family:var(--font-display);font-size:1.1rem;margin:1rem 0 0.5rem;">Ordonnance</h3>
+      {{ form.non_field_errors }}
+      <div class="clinical-question-grid">
+        {% for field in form.visible_fields %}
+          <fieldset class="clinical-question">
+            <legend>{{ field.label }}</legend>
+            {{ field }}
+            {% if field.errors %}
+              <div class="clinical-field-error">{{ field.errors }}</div>
+            {% endif %}
+          </fieldset>
+        {% endfor %}
+      </div>
+      <h3>Ordonnance</h3>
       {{ formset.management_form }}
       {% for f in formset %}
-        <div style="border:1px solid var(--border);border-radius:8px;padding:0.75rem;margin-bottom:0.5rem;">
-          {{ f.as_p }}
+        <div class="prescription-row">
+          {% for hidden in f.hidden_fields %}{{ hidden }}{% endfor %}
+          {{ f.non_field_errors }}
+          <div class="prescription-grid">
+            <label><span>Medicament</span>{{ f.medicament }}{{ f.medicament.errors }}</label>
+            <label><span>Dosage</span>{{ f.dosage }}{{ f.dosage.errors }}</label>
+            <label><span>Duree</span>{{ f.duree }}{{ f.duree.errors }}</label>
+            <label class="prescription-grid__wide"><span>Instructions</span>{{ f.instructions }}{{ f.instructions.errors }}</label>
+          </div>
+          {% if f.DELETE %}
+            <label class="prescription-delete">{{ f.DELETE }} <span>Supprimer cette ligne</span></label>
+          {% endif %}
         </div>
       {% endfor %}
-      <button type="submit" class="dash-btn dash-btn--primary" style="margin-top:1rem;">Terminer la consultation</button>
+      <button type="submit" class="dash-btn dash-btn--primary">Enregistrer la consultation</button>
     </form>
-  </div>
+  </section>
 </div>
-<style>@media(max-width:900px){.med-consult-grid{grid-template-columns:1fr;}}</style>
 {% endblock %}

@@ -1,27 +1,133 @@
 {% extends "dashboards/base_dashboard.html" %}
 {% block dash_main %}
-<div class="dash-card" style="margin-bottom:1.5rem;">
-  <h2 style="font-family:var(--font-display);font-weight:400;">Dossier {{ dossier.num_dossier }}</h2>
-  <p><strong>Antécédents</strong></p>
-  <p style="color:var(--text-muted);font-weight:300;">{{ dossier.antecedents|default:"—"|linebreaksbr }}</p>
-  <p><strong>Allergies</strong></p>
-  <p style="color:var(--text-muted);font-weight:300;">{{ dossier.allergies|default:"—"|linebreaksbr }}</p>
-</div>
-<h3 class="dash-requests__title">Historique des consultations</h3>
-<div class="dash-table-wrap">
-  <table class="dash-table">
-    <thead><tr><th>Date</th><th>Médecin</th><th>Diagnostic</th></tr></thead>
-    <tbody>
-      {% for c in consultations_passees %}
-        <tr>
-          <td>{{ c.date|date:"d/m/Y H:i" }}</td>
-          <td>Dr. {{ c.medecin.user.get_full_name|default:c.medecin.user.email }}</td>
-          <td>{{ c.diagnostic|default:"—"|truncatechars:80 }}</td>
-        </tr>
-      {% empty %}
-        <tr><td colspan="3">Aucune consultation.</td></tr>
-      {% endfor %}
-    </tbody>
-  </table>
-</div>
+<section class="medical-intro">
+  <span class="medical-intro__eyebrow">Dossier {{ dossier.num_dossier }}</span>
+  <h2>Consultation du dossier medical</h2>
+  <p>
+    Clinova offre au patient un acces securise a son dossier medical numerique afin de centraliser toutes
+    les informations relatives a son suivi medical.
+  </p>
+  <div class="medical-intro__grid">
+    <article>
+      <h3>Depuis votre espace personnel</h3>
+      <ul>
+        <li>Informations personnelles</li>
+        <li>Historique medical complet</li>
+        <li>Anciennes consultations et diagnostics</li>
+        <li>Traitements prescrits et ordonnances medicales</li>
+        <li>Examens effectues et recommandations du medecin</li>
+      </ul>
+    </article>
+    <article>
+      <h3>Confidentialite</h3>
+      <p>
+        Chaque consultation enregistree par le medecin est automatiquement ajoutee a votre historique.
+        Les donnees sont protegees par authentification et permissions d'acces strictes.
+      </p>
+    </article>
+  </div>
+</section>
+
+<section class="patient-file-grid">
+  <article class="dash-card">
+    <h2>Informations personnelles</h2>
+    <p><strong>Patient</strong><br>{{ patient.user.get_full_name|default:patient.user.email }}</p>
+    <p><strong>Email</strong><br>{{ patient.user.email }}</p>
+    <p><strong>Telephone</strong><br>{{ patient.telephone|default:"-" }}</p>
+    <p><strong>Adresse</strong><br>{{ patient.adresse|default:"-" }}</p>
+  </article>
+  <article class="dash-card">
+    <h2>Antecedents</h2>
+    <p>{{ dossier.antecedents|default:"Aucun antecedent enregistre."|linebreaksbr }}</p>
+    <h2 style="margin-top:1rem;">Allergies</h2>
+    <p>{{ dossier.allergies|default:"Aucune allergie enregistree."|linebreaksbr }}</p>
+  </article>
+</section>
+
+<section class="risk-panel risk-panel--{{ risk_stats.latest.risk_level|default:'faible' }}">
+  <div>
+    <span class="medical-intro__eyebrow">Analyse IA</span>
+    <h2>Suivi du risque medical</h2>
+    <p>
+      Apres chaque consultation, le systeme attribue automatiquement un niveau de risque :
+      vert pour un etat stable, orange pour une surveillance necessaire, rouge pour un risque eleve.
+    </p>
+  </div>
+  <div class="risk-score-card">
+    {% if risk_stats.latest %}
+      <strong>{{ risk_stats.latest.risk_score }}</strong>
+      <span>{{ risk_stats.latest.risk_label }}</span>
+      <div class="risk-meter" style="--risk: {{ risk_stats.latest.risk_percent }}%;"><i></i></div>
+    {% else %}
+      <strong>0</strong>
+      <span>Aucune analyse disponible</span>
+      <div class="risk-meter" style="--risk: 0%;"><i></i></div>
+    {% endif %}
+  </div>
+</section>
+
+<section class="risk-breakdown" aria-label="Repartition des risques">
+  <article><span class="risk-dot risk-dot--faible"></span><strong>{{ risk_stats.faible }}</strong><p>Faible risque</p></article>
+  <article><span class="risk-dot risk-dot--moyen"></span><strong>{{ risk_stats.moyen }}</strong><p>Risque moyen</p></article>
+  <article><span class="risk-dot risk-dot--eleve"></span><strong>{{ risk_stats.eleve }}</strong><p>Risque eleve</p></article>
+</section>
+
+<section class="risk-chart-panel" aria-label="Evolution du score de risque">
+  <div>
+    <span class="medical-intro__eyebrow">Graphique</span>
+    <h2>Evolution du score de risque</h2>
+    <p>Suivi visuel des variations de temperature, tension et maladies chroniques a travers les consultations.</p>
+  </div>
+  <div class="risk-chart">
+    {% for c in consultations_passees %}
+      <div class="risk-chart__item">
+        <span>{{ c.date|date:"d/m" }}</span>
+        <div class="risk-chart__track"><i class="risk-chart__bar risk-chart__bar--{{ c.risk_level }}" style="--risk: {{ c.risk_percent }}%;"></i></div>
+        <strong>{{ c.risk_score }}</strong>
+      </div>
+    {% empty %}
+      <p class="dash-requests__empty">Le graphique sera disponible apres la premiere consultation.</p>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="dash-requests" aria-labelledby="medical-history-title">
+  <h2 id="medical-history-title" class="dash-requests__title">Historique medical</h2>
+  <div class="medical-timeline">
+    {% for c in consultations_passees %}
+      <article class="medical-event">
+        <div class="medical-event__top">
+          <div>
+            <time>{{ c.updated_at|date:"d/m/Y H:i" }}</time>
+            <h3>Dr. {{ c.medecin.user.get_full_name|default:c.medecin.user.email }} - {{ c.specialite_formulaire_label }}</h3>
+          </div>
+          <span class="risk-pill risk-pill--{{ c.risk_level }}">{{ c.risk_score }} - {{ c.risk_label }}</span>
+        </div>
+        <dl>
+          <div><dt>Temperature</dt><dd>{{ c.temperature|default:"-" }} C</dd></div>
+          <div><dt>Tension</dt><dd>{{ c.tension|default:"-" }}</dd></div>
+          <div><dt>Poids</dt><dd>{{ c.poids|default:"-" }} kg</dd></div>
+        </dl>
+        <p><strong>Symptomes :</strong> {{ c.symptomes|default:"-" }}</p>
+        <p><strong>Diagnostic :</strong> {{ c.diagnostic|default:"-" }}</p>
+        <p><strong>Traitement :</strong> {{ c.traitement|default:"-" }}</p>
+        <p><strong>Compte rendu :</strong> {{ c.compte_rendu|default:"-"|linebreaksbr }}</p>
+        {% if c.ordonnance %}
+          <div class="medical-prescription">
+            <strong>Ordonnance numerique</strong>
+            <ul>
+              {% for ligne in c.ordonnance.lignes.all %}
+                <li>{{ ligne.medicament }} - {{ ligne.dosage }} - {{ ligne.duree }}</li>
+              {% empty %}
+                <li>Aucune ligne d'ordonnance.</li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+      </article>
+    {% empty %}
+      <p class="dash-requests__empty">Aucune consultation enregistree pour le moment.</p>
+    {% endfor %}
+  </div>
+</section>
 {% endblock %}

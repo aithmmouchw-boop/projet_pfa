@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib import admin
 
+from clinic_common.clinical_specialties import SPECIALTY_CHOICES
 from accounts.models import User
 from .models import Medecin
 
@@ -20,9 +21,18 @@ class MedecinAdminForm(forms.ModelForm):
     class Meta:
         model = Medecin
         fields = ("specialite", "tarif_consultation", "bio", "photo", "actif")
+        widgets = {
+            "specialite": forms.Select(choices=SPECIALTY_CHOICES),
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        choices = list(SPECIALTY_CHOICES)
+        if self.instance.pk and self.instance.specialite:
+            values = {value for value, _label in choices}
+            if self.instance.specialite not in values:
+                choices.insert(0, (self.instance.specialite, self.instance.specialite))
+        self.fields["specialite"].widget.choices = choices
         if self.instance.pk and self.instance.user_id:
             user = self.instance.user
             self.fields["email"].initial = user.email

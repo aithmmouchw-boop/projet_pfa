@@ -9,12 +9,14 @@ from urllib.parse import urlencode
 
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.views import View
 from django.views.generic import FormView, ListView, TemplateView
 
+from clinic_common.visual_assets import attach_medecin_visuals
 from facturation.models import Facture
 from medecins.models import Medecin
 from patients.forms import PatientOnboardingForm, RdvMotifForm
@@ -22,7 +24,7 @@ from patients.mixins import PatientAccountMixin
 from patients.models import Patient
 from patients.utils import generer_num_dossier
 from rendez_vous.models import RendezVous
-from rendez_vous.services import creneaux_libres, prochains_jours
+from rendez_vous.services import creneau_est_occupe, creneaux_jour, prochains_jours
 
 
 def _normalise_slot_iso(slot_raw: str | None) -> str | None:
@@ -57,7 +59,7 @@ def _rdv_booking_url(
 def _shell(request, intro: str) -> dict[str, Any]:
     u = request.user
     return {
-        "clinic": SimpleNamespace(name="AESCULIA"),
+        "clinic": SimpleNamespace(name="CLINOVA"),
         "user_display": (u.get_full_name() or "").strip() or u.email,
         "dashboard_intro": intro,
     }
@@ -119,6 +121,15 @@ class PatientDashboardView(PatientAccountMixin, TemplateView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         patient: Patient = self.request.patient_profile  # type: ignore[attr-defined]
+        consultations = patient.consultations.select_related(
+            "medecin__user"
+        ).prefetch_related("ordonnance__lignes").order_by("-updated_at", "-date")
+        risk_stats = {
+            "faible": consultations.filter(risk_level="faible").count(),
+            "moyen": consultations.filter(risk_level="moyen").count(),
+            "eleve": consultations.filter(risk_level="eleve").count(),
+            "latest": consultations.first(),
+        }
         now = timezone.now()
         next_rdv = (
             patient.rendez_vous.filter(
@@ -148,7 +159,7 @@ class PatientDashboardView(PatientAccountMixin, TemplateView):
                 },
                 "recent_consultations": patient.consultations.select_related(
                     "medecin__user"
-                ).order_by("-date")[:3],
+                ).order_by("-updated_at", "-date")[:3],
             }
         )
         ctx.update(
@@ -184,27 +195,46 @@ class RdvBookingView(PatientAccountMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        medecin_id = self.request.GET.get("medecin")
+        medecin_id = self.request.GET.get("medecin") or self.request.GET.get("doctor")
         slot_iso = _normalise_slot_iso(self.request.GET.get("slot"))
+        search_query = (self.request.GET.get("q") or "").strip()
+        selected_specialite = (self.request.GET.get("specialite") or "").strip()
+        medecins = Medecin.objects.filter(actif=True).select_related("user")
+        if selected_specialite:
+            medecins = medecins.filter(specialite__iexact=selected_specialite)
+        if search_query:
+            medecins = medecins.filter(
+                Q(specialite__icontains=search_query)
+                | Q(user__first_name__icontains=search_query)
+                | Q(user__last_name__icontains=search_query)
+                | Q(user__email__icontains=search_query)
+            )
+        medecins = medecins.order_by("specialite", "user__last_name", "user__first_name")
+        medecins = attach_medecin_visuals(medecins)
         medecin = None
         jours: list[dict[str, Any]] = []
         if medecin_id:
             medecin = get_object_or_404(Medecin, pk=medecin_id, actif=True)
+            attach_medecin_visuals([medecin])
             for jour in prochains_jours(14):
-                slots = list(creneaux_libres(medecin, jour))
-                if slots:
-                    jours.append(
-                        {
-                            "date": jour,
-                            "slots": [{"dt": s, "iso": s.isoformat()} for s in slots],
-                        }
-                    )
+                jours.append(
+                    {
+                        "date": jour,
+                        "slots": creneaux_jour(medecin, jour),
+                    }
+                )
         ctx.update(
             {
                 "role_key": "patient",
                 "role_title": "Patient",
                 "dashboard_nav": _nav("Prendre un RDV"),
-                "medecins": Medecin.objects.filter(actif=True).select_related("user"),
+                "medecins": medecins,
+                "specialites": Medecin.objects.filter(actif=True)
+                .order_by("specialite")
+                .values_list("specialite", flat=True)
+                .distinct(),
+                "search_query": search_query,
+                "selected_specialite": selected_specialite,
                 "medecin": medecin,
                 "jours": jours,
                 "slot_iso": slot_iso,
@@ -240,6 +270,12 @@ class RdvBookingView(PatientAccountMixin, TemplateView):
             return redirect(_rdv_booking_url(medecin.pk))
         if timezone.is_naive(dt):
             dt = timezone.make_aware(dt, timezone.get_current_timezone())
+        if creneau_est_occupe(medecin, dt):
+            messages.error(
+                request,
+                "Ce creneau est deja pris. Choisissez un autre horaire.",
+            )
+            return redirect(_rdv_booking_url(medecin.pk))
         rdv = RendezVous.objects.create(
             patient=patient,
             medecin=medecin,
@@ -301,18 +337,27 @@ class DossierView(PatientAccountMixin, TemplateView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         patient: Patient = self.request.patient_profile  # type: ignore[attr-defined]
+        consultations = patient.consultations.select_related(
+            "medecin__user"
+        ).prefetch_related("ordonnance__lignes").order_by("-updated_at", "-date")
+        risk_stats = {
+            "faible": consultations.filter(risk_level="faible").count(),
+            "moyen": consultations.filter(risk_level="moyen").count(),
+            "eleve": consultations.filter(risk_level="eleve").count(),
+            "latest": consultations.first(),
+        }
         ctx.update(
             {
                 "role_key": "patient",
                 "role_title": "Patient",
                 "dashboard_nav": _nav("Mon dossier"),
                 "dossier": patient.dossier,
-                "consultations_passees": patient.consultations.select_related(
-                    "medecin__user"
-                ).order_by("-date")[:20],
+                "patient": patient,
+                "risk_stats": risk_stats,
+                "consultations_passees": consultations[:20],
             }
         )
-        ctx.update(_shell(self.request, "Votre dossier médical synthétique."))
+        ctx.update(_shell(self.request, "Consultation securisee de votre dossier medical."))
         return ctx
 
 
@@ -331,4 +376,30 @@ class FacturesListView(PatientAccountMixin, ListView):
         ctx["role_title"] = "Patient"
         ctx["dashboard_nav"] = _nav("Mes factures")
         ctx.update(_shell(self.request, "Vos factures et leur statut."))
+        return ctx
+
+
+class PatientFactureDetailView(PatientAccountMixin, TemplateView):
+    template_name = "patient/facture_detail.html"
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        facture = get_object_or_404(
+            self.request.patient_profile.factures.select_related(  # type: ignore[attr-defined]
+                "patient__user",
+                "consultation__medecin__user",
+            ).prefetch_related("lignes", "paiements"),
+            pk=self.kwargs["pk"],
+        )
+        ctx.update(
+            {
+                "role_key": "patient",
+                "role_title": "Patient",
+                "dashboard_nav": _nav("Mes factures"),
+                "facture": facture,
+                "latest_payment": facture.paiements.filter(valide=True).first(),
+                "print_now": self.request.GET.get("print") == "1",
+            }
+        )
+        ctx.update(_shell(self.request, "Consultation et impression securisees de votre facture."))
         return ctx

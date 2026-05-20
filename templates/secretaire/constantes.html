@@ -1,11 +1,18 @@
 {% extends "dashboards/base_dashboard.html" %}
 {% block dash_main %}
-<div class="dash-card" style="max-width:520px;">
-  <h2 style="font-family:var(--font-display);font-weight:400;">Constantes — {{ rdv.patient.user.get_full_name|default:rdv.patient.user.email }}</h2>
-  <p>{{ rdv.date_heure|date:"d/m/Y H:i" }} — Dr. {{ rdv.medecin.user.get_full_name|default:rdv.medecin.user.email }}</p>
-  <form method="post">{% csrf_token %}
+<div class="dash-card constants-card">
+  <div class="constants-card__head">
+    <div>
+      <span class="booking-head__eyebrow">Constantes</span>
+      <h2>{{ rdv.patient.user.get_full_name|default:rdv.patient.user.email }}</h2>
+      <p>{{ rdv.date_heure|date:"d/m/Y H:i" }} - Dr. {{ rdv.medecin.user.get_full_name|default:rdv.medecin.user.email }}</p>
+    </div>
+    <a class="dash-btn dash-btn--ghost dash-btn--compact" href="{{ dashboard_return_url }}">Retour</a>
+  </div>
+  <form method="post" class="constants-form">
+    {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit" class="dash-btn dash-btn--primary" style="margin-top:1rem;">Enregistrer</button>
+    <button type="submit" class="dash-btn dash-btn--primary">Enregistrer les constantes</button>
   </form>
 </div>
 {% endblock %}

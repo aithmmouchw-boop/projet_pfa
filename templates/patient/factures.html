@@ -3,19 +3,23 @@
 <div class="dash-table-wrap">
   <table class="dash-table">
     <thead>
-      <tr><th>N°</th><th>Date</th><th>Total</th><th>Statut</th><th>Médecin</th></tr>
+      <tr><th>N</th><th>Date</th><th>Total</th><th>Statut</th><th>Medecin</th><th>Action</th></tr>
     </thead>
     <tbody>
       {% for f in factures %}
         <tr>
-          <td><a href="{% url 'facturation:facture_detail' f.pk %}">{{ f.numero }}</a></td>
+          <td>{{ f.numero }}</td>
           <td>{{ f.created_at|date:"d/m/Y" }}</td>
-          <td>{{ f.total_ttc }} CHF</td>
+          <td>{{ f.total_ttc|floatformat:2 }} DH</td>
           <td><span class="badge badge-{{ f.statut }}">{{ f.get_statut_display }}</span></td>
           <td>Dr. {{ f.consultation.medecin.user.get_full_name|default:f.consultation.medecin.user.email }}</td>
+          <td class="dash-actions-cell">
+            <a class="dash-btn dash-btn--ghost dash-btn--compact" href="{% url 'patients:facture_detail' f.pk %}">Voir</a>
+            <a class="dash-btn dash-btn--primary dash-btn--compact" href="{% url 'patients:facture_detail' f.pk %}?print=1">Imprimer</a>
+          </td>
         </tr>
       {% empty %}
-        <tr><td colspan="5">Aucune facture.</td></tr>
+        <tr><td colspan="6">Aucune facture.</td></tr>
       {% endfor %}
     </tbody>
   </table>

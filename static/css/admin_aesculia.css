@@ -638,15 +638,38 @@ body:not(.popup) #content {
 }
 
 .aes-admin-hero {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 24px;
-  padding: 34px 40px;
-  border: 1px solid #d9e1da;
-  border-radius: 14px;
-  background: #eeeae2;
-  box-shadow: 0 12px 40px rgba(28, 43, 30, 0.05);
+  position: relative;
+  overflow: hidden;
+  padding: 44px 48px;
+  border: 1px solid rgba(61, 107, 79, 0.18);
+  border-radius: 24px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(238, 245, 239, 0.82)),
+    #f7f4ef;
+  box-shadow: 0 24px 70px rgba(28, 43, 30, 0.09);
+}
+
+.aes-admin-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 9px;
+  background: linear-gradient(180deg, #3d6b4f, #7bae8a, #c9a96e);
+}
+
+.aes-admin-hero::after {
+  content: "";
+  position: absolute;
+  right: 28px;
+  top: 28px;
+  width: 220px;
+  height: 120px;
+  background-image:
+    linear-gradient(rgba(61, 107, 79, 0.12) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(61, 107, 79, 0.12) 1px, transparent 1px);
+  background-size: 18px 18px;
+  opacity: 0.55;
+  pointer-events: none;
 }
 
 .aes-admin-kicker {
@@ -662,7 +685,7 @@ body:not(.popup) #content {
   margin: 0;
   color: #1c2b1e;
   font-family: "Cormorant Garamond", Georgia, serif;
-  font-size: 42px;
+  font-size: clamp(42px, 4.4vw, 62px);
   font-weight: 400;
   line-height: 1.1;
 }
@@ -671,110 +694,119 @@ body:not(.popup) #content {
   max-width: 760px;
   margin: 16px 0 0;
   color: #6b7b6e;
-  font-size: 17px;
+  font-size: 18px;
   line-height: 1.6;
-}
-
-.aes-admin-hero__actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  justify-content: flex-end;
-  min-width: 260px;
-}
-
-.aes-admin-hero__actions a {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 40px;
-  padding: 0 15px;
-  border-radius: 8px;
-  background: #1c2b1e;
-  color: #ffffff;
-  font-size: 13px;
-  font-weight: 700;
-  text-decoration: none;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-.aes-admin-hero__actions a + a {
-  border: 1px solid rgba(28, 43, 30, 0.18);
-  background: #ffffff;
-  color: #3d6b4f;
 }
 
 .aes-admin-stats {
   display: grid;
-  grid-template-columns: repeat(4, minmax(170px, 1fr));
-  gap: 16px;
-  margin-top: 22px;
+  grid-template-columns: repeat(4, minmax(190px, 1fr));
+  gap: 22px;
+  margin-top: 30px;
 }
 
 .aes-admin-stat {
-  min-height: 132px;
-  padding: 20px;
-  border: 1px solid #d9e1da;
-  border-radius: 10px;
-  background: #ffffff;
-  box-shadow: 0 10px 30px rgba(28, 43, 30, 0.04);
+  --stat-accent: #7bae8a;
+  --stat-glow: rgba(123, 174, 138, 0.34);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 188px;
+  box-sizing: border-box;
+  padding: 82px 24px 24px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 24px;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.12), transparent 36%),
+    linear-gradient(160deg, #13251a 0%, #1c3b29 58%, #102116 100%);
+  box-shadow:
+    0 24px 62px rgba(28, 43, 30, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  text-decoration: none;
+  isolation: isolate;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
 }
 
-.aes-admin-stat__icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 42px;
-  height: 42px;
-  border-radius: 12px;
-  background: rgba(61, 107, 79, 0.12);
-  color: #3d6b4f;
+.aes-admin-stat::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(90deg, var(--stat-accent), transparent 48%) 0 0 / 100% 5px no-repeat,
+    linear-gradient(135deg, rgba(255, 255, 255, 0.09), transparent 45%);
 }
 
-.aes-admin-stat__icon--blue {
-  background: rgba(73, 111, 144, 0.13);
-  color: #496f90;
+.aes-admin-stat::after {
+  content: "";
+  position: absolute;
+  right: 22px;
+  top: 22px;
+  width: 46px;
+  height: 46px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 16px;
+  background:
+    linear-gradient(135deg, var(--stat-accent), rgba(255, 255, 255, 0.08));
+  box-shadow: 0 16px 34px var(--stat-glow);
+  opacity: 0.72;
 }
 
-.aes-admin-stat__icon--gold {
-  background: rgba(201, 169, 110, 0.18);
-  color: #8d6d2e;
+.aes-admin-stat:nth-child(2) {
+  --stat-accent: #8fc5ff;
+  --stat-glow: rgba(143, 197, 255, 0.24);
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.12), transparent 36%),
+    linear-gradient(160deg, #102033 0%, #1e4760 58%, #0d1d2a 100%);
 }
 
-.aes-admin-stat__icon--red {
-  background: rgba(192, 57, 43, 0.11);
-  color: #b03a2e;
+.aes-admin-stat:nth-child(3) {
+  --stat-accent: #f0c66f;
+  --stat-glow: rgba(240, 198, 111, 0.26);
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.12), transparent 36%),
+    linear-gradient(160deg, #2b2414 0%, #594522 58%, #21180d 100%);
 }
 
-.aes-admin-stat__icon svg {
-  width: 22px;
-  height: 22px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.8;
-  stroke-linecap: round;
-  stroke-linejoin: round;
+.aes-admin-stat:nth-child(4) {
+  --stat-accent: #7ee7c3;
+  --stat-glow: rgba(126, 231, 195, 0.24);
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.12), transparent 36%),
+    linear-gradient(160deg, #0e2a24 0%, #265c4e 58%, #0b211c 100%);
 }
 
-.aes-admin-stat span:not(.aes-admin-stat__icon) {
+.aes-admin-stat:hover,
+.aes-admin-stat:focus {
+  border-color: rgba(255, 255, 255, 0.26);
+  box-shadow:
+    0 30px 76px rgba(28, 43, 30, 0.26),
+    0 0 0 5px var(--stat-glow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  transform: translateY(-6px);
+}
+
+.aes-admin-stat span {
   display: block;
-  margin-top: 16px;
-  color: #6b7b6e;
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  line-height: 1.3;
   text-transform: uppercase;
 }
 
 .aes-admin-stat strong {
   display: block;
-  margin-top: 9px;
-  color: #1c2b1e;
-  font-family: "Cormorant Garamond", Georgia, serif;
-  font-size: 38px;
-  font-weight: 600;
+  color: #ffffff;
+  font-family: "DM Sans", Arial, sans-serif;
+  font-size: clamp(56px, 5vw, 78px);
+  font-weight: 900;
+  letter-spacing: 0;
   line-height: 1;
+  text-shadow: 0 10px 28px rgba(0, 0, 0, 0.24);
 }
 
 .aes-admin-panels {
@@ -1037,13 +1069,7 @@ body:not(.popup) #content {
 
 @media (max-width: 720px) {
   .aes-admin-hero {
-    flex-direction: column;
     padding: 28px 24px;
-  }
-
-  .aes-admin-hero__actions {
-    justify-content: flex-start;
-    min-width: 0;
   }
 
   .aes-admin-stats,

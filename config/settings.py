@@ -112,5 +112,5 @@ LOGIN_REDIRECT_URL = "/patient/dashboard/"
 LOGOUT_REDIRECT_URL = "/"
 
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-DEFAULT_FROM_EMAIL = "noreply@aesculia.local"
+DEFAULT_FROM_EMAIL = "noreply@clinova.local"
 SERVER_EMAIL = DEFAULT_FROM_EMAIL

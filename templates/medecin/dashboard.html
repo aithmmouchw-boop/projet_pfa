@@ -4,14 +4,14 @@
   <article class="dash-metric">
     <span class="dash-metric__label">Consultations a terminer</span>
     <strong>{{ consultations_waiting_count }}</strong>
-    <small>Patients arrives ou en cours aujourd'hui</small>
+    <small>Patients arrives ou en cours</small>
   </article>
 </section>
 
 <div class="dash-table-wrap">
   <table class="dash-table">
     <thead>
-      <tr><th>Heure</th><th>Patient</th><th>Rendez-vous</th><th>Constantes</th><th>Actions</th></tr>
+      <tr><th>Heure</th><th>Patient</th><th>Rendez-vous</th><th>Constantes</th><th>Risque IA</th><th>Actions</th></tr>
     </thead>
     <tbody>
       {% for c in consultations_today %}
@@ -26,6 +26,7 @@
               -
             {% endif %}
           </td>
+          <td><span class="risk-pill risk-pill--{{ c.risk_level }}">{{ c.risk_score }} - {{ c.risk_label }}</span></td>
           <td class="dash-actions-cell">
             <a class="dash-btn dash-btn--ghost dash-btn--compact" href="{% url 'medecins:consultation_detail' c.pk %}">Dossier</a>
             <form method="post" action="{% url 'medecins:consultation_terminer' c.pk %}" style="display:inline;">{% csrf_token %}
@@ -34,9 +35,33 @@
           </td>
         </tr>
       {% empty %}
-        <tr><td colspan="5">Aucune consultation en file aujourd'hui.</td></tr>
+        <tr><td colspan="6">Aucune consultation en file.</td></tr>
       {% endfor %}
     </tbody>
   </table>
 </div>
+
+<section class="dash-requests" aria-labelledby="medecin-history-title">
+  <h2 id="medecin-history-title" class="dash-requests__title">Historique des patients</h2>
+  <div class="dash-table-wrap">
+    <table class="dash-table">
+      <thead>
+        <tr><th>Derniere modification</th><th>Patient</th><th>Specialite</th><th>Resume</th><th>Risque</th></tr>
+      </thead>
+      <tbody>
+        {% for h in historique_patients %}
+          <tr>
+            <td>{{ h.updated_at|date:"d/m/Y H:i" }}</td>
+            <td>{{ h.patient.user.get_full_name|default:h.patient.user.email }}</td>
+            <td>{{ h.specialite_formulaire_label }}</td>
+            <td>{{ h.compte_rendu|default:h.diagnostic|default:"-"|truncatechars:90 }}</td>
+            <td><span class="risk-pill risk-pill--{{ h.risk_level }}">{{ h.risk_score }} - {{ h.risk_label }}</span></td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="5">Aucun historique patient pour le moment.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
 {% endblock %}

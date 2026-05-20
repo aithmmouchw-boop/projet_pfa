@@ -4,7 +4,7 @@
   <div class="invoice-sheet__top">
     <div>
       <span>Invoice ID : #{{ facture.pk|stringformat:"04d" }}</span>
-      <h2>Aesculia</h2>
+      <h2>Clinova</h2>
     </div>
     <strong>{% if facture.statut == "payee" %}Paid{% else %}Unpaid{% endif %}</strong>
   </div>

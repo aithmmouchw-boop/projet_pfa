@@ -2,12 +2,14 @@ from django.contrib import admin
 from django.urls import reverse
 from django.utils.html import format_html
 
+from clinic_common.admin_permissions import ClinicDeletePermissionMixin
 from consultations.models import Consultation
+from rendez_vous.services import ensure_consultation_for_rdv
 from .models import RendezVous
 
 
 @admin.register(RendezVous)
-class RendezVousAdmin(admin.ModelAdmin):
+class RendezVousAdmin(ClinicDeletePermissionMixin, admin.ModelAdmin):
     list_display = ("patient_link", "medecin_link", "date_heure", "statut", "motif", "consultation_link")
     list_filter = ("statut", "date_heure")
     search_fields = (
@@ -26,6 +28,15 @@ class RendezVousAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         return super().get_queryset(request).select_related("patient__user", "medecin__user")
+
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+        if obj.statut in (
+            RendezVous.Statut.ARRIVE,
+            RendezVous.Statut.EN_COURS,
+            RendezVous.Statut.TERMINE,
+        ):
+            ensure_consultation_for_rdv(obj)
 
     @admin.display(description="Patient")
     def patient_link(self, obj):
@@ -46,6 +57,3 @@ class RendezVousAdmin(admin.ModelAdmin):
             return "Aucune"
         url = reverse("admin:consultations_consultation_change", args=[consultation.pk])
         return format_html('<a href="{}">Ouvrir</a>', url)
-
-    def has_delete_permission(self, request, obj=None):
-        return False

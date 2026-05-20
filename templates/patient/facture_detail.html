@@ -1,0 +1,63 @@
+{% extends "dashboards/base_dashboard.html" %}
+{% block dash_main %}
+<section class="invoice-sheet patient-invoice" aria-label="Facture patient">
+  <div class="invoice-sheet__top">
+    <div>
+      <span>Facture {{ facture.numero }}</span>
+      <h2>Clinova</h2>
+    </div>
+    <strong>{% if facture.statut == "payee" %}Payee{% else %}{{ facture.get_statut_display }}{% endif %}</strong>
+  </div>
+
+  <div class="invoice-lines">
+    <p><span>Patient :</span><strong>{{ facture.patient.user.get_full_name|default:facture.patient.user.email }}</strong></p>
+    <p><span>Medecin :</span><strong>Dr. {{ facture.consultation.medecin.user.get_full_name|default:facture.consultation.medecin.user.email }}</strong></p>
+    <p><span>Specialite :</span><strong>{{ facture.consultation.medecin.specialite }}</strong></p>
+    <p><span>Date consultation :</span><strong>{{ facture.consultation.date|date:"d/m/Y" }}</strong></p>
+    <p><span>Total :</span><strong>{{ facture.total_ttc|floatformat:2 }} DH</strong></p>
+    <p>
+      <span>Paiement :</span>
+      <strong>
+        {% if latest_payment %}
+          {{ latest_payment.get_mode_display }} - {{ latest_payment.montant|floatformat:2 }} DH
+        {% else %}
+          En attente
+        {% endif %}
+      </strong>
+    </p>
+  </div>
+
+  <div class="dash-table-wrap">
+    <table class="dash-table">
+      <thead><tr><th>Libelle</th><th>Qte</th><th>P.U.</th><th>Total</th></tr></thead>
+      <tbody>
+        {% for ligne in facture.lignes.all %}
+          <tr>
+            <td>{{ ligne.libelle }}</td>
+            <td>{{ ligne.quantite }}</td>
+            <td>{{ ligne.prix_unitaire|floatformat:2 }} DH</td>
+            <td>{{ ligne.montant_ligne|floatformat:2 }} DH</td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="4">Aucune ligne.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="invoice-sheet__foot">
+    <a class="dash-btn dash-btn--ghost" href="{% url 'patients:factures' %}">Retour</a>
+    <button class="dash-btn dash-btn--primary" onclick="window.print()">Imprimer</button>
+  </div>
+</section>
+{% endblock %}
+{% block extra_js %}
+{{ block.super }}
+{% if print_now %}
+<script>
+window.addEventListener("load", function () {
+  window.print();
+});
+</script>
+{% endif %}
+{% endblock %}

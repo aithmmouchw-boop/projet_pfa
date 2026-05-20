@@ -13,4 +13,5 @@ urlpatterns = [
     path("rdv/<int:pk>/annuler/", views.RdvAnnulerView.as_view(), name="rdv_annuler"),
     path("dossier/", views.DossierView.as_view(), name="dossier"),
     path("factures/", views.FacturesListView.as_view(), name="factures"),
+    path("factures/<int:pk>/", views.PatientFactureDetailView.as_view(), name="facture_detail"),
 ]

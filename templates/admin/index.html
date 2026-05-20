@@ -10,83 +10,29 @@
 {% admin_overview_stats as overview %}
 <section class="aes-admin-hero">
   <div>
-    <p class="aes-admin-kicker">Vue d'ensemble</p>
+    <p class="aes-admin-kicker">Dashboard admin</p>
     <h1>Bonjour{% if user.get_short_name %}, {{ user.get_short_name }}{% endif %}</h1>
-    <p>Suivi global de la clinique, securite, historique des acces, sauvegardes et donnees financieres.</p>
-  </div>
-  <div class="aes-admin-hero__actions">
-    <a href="{% url 'admin:clinic_common_databasebackup_create' %}">Sauvegarder la base</a>
-    <a href="{% url 'admin:clinic_common_systemsetting_changelist' %}">Parametres</a>
+    <p>Vue rapide sur les patients, medecins, factures et rendez-vous de la clinique.</p>
   </div>
 </section>
 
-<section class="aes-admin-stats" aria-label="Statistiques principales">
-  <article class="aes-admin-stat">
-    <span class="aes-admin-stat__icon" aria-hidden="true">
-      <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-    </span>
-    <span>Patients enregistres</span>
+<section class="aes-admin-stats" aria-label="Dashboard admin">
+  <a class="aes-admin-stat" href="{% url 'admin:patients_patient_changelist' %}">
     <strong>{{ overview.patients_count }}</strong>
-  </article>
-  <article class="aes-admin-stat">
-    <span class="aes-admin-stat__icon aes-admin-stat__icon--blue" aria-hidden="true">
-      <svg viewBox="0 0 24 24"><path d="M8 2v4"/><path d="M16 2v4"/><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18"/></svg>
-    </span>
-    <span>Rendez-vous</span>
+    <span>Patients</span>
+  </a>
+  <a class="aes-admin-stat" href="{% url 'admin:medecins_medecin_changelist' %}">
+    <strong>{{ overview.doctors_count }}</strong>
+    <span>Medecins</span>
+  </a>
+  <a class="aes-admin-stat" href="{% url 'admin:facturation_facture_changelist' %}">
+    <strong>{{ overview.factures_count }}</strong>
+    <span>Factures</span>
+  </a>
+  <a class="aes-admin-stat" href="{% url 'admin:rendez_vous_rendezvous_changelist' %}">
     <strong>{{ overview.appointments_count }}</strong>
-  </article>
-  <article class="aes-admin-stat">
-    <span class="aes-admin-stat__icon aes-admin-stat__icon--gold" aria-hidden="true">
-      <svg viewBox="0 0 24 24"><path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7H14a3.5 3.5 0 0 1 0 7H6"/></svg>
-    </span>
-    <span>Consultations effectuees</span>
-    <strong>{{ overview.consultations_done_count }}</strong>
-  </article>
-  <article class="aes-admin-stat">
-    <span class="aes-admin-stat__icon aes-admin-stat__icon--red" aria-hidden="true">
-      <svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/><path d="M6 15h2"/><path d="M10 15h4"/></svg>
-    </span>
-    <span>Paiements realises</span>
-    <strong>{{ overview.payments_count }}</strong>
-  </article>
-</section>
-
-<section class="aes-admin-panels" aria-label="Systeme et securite">
-  <article class="aes-admin-panel aes-admin-panel--finance">
-    <div class="aes-admin-panel__head">
-      <span>Dashboard financier</span>
-      <a href="{% url 'facturation:caissier_dashboard' %}">Ouvrir caisse</a>
-    </div>
-    <div class="aes-admin-finance-grid">
-      <p><span>Revenus du jour</span><strong>{{ overview.revenue_today|floatformat:2 }} DH</strong></p>
-      <p><span>Revenus mensuels</span><strong>{{ overview.revenue_month|floatformat:2 }} DH</strong></p>
-      <p><span>Consultations payees</span><strong>{{ overview.paid_consultations_count }}</strong></p>
-      <p><span>Consultations impayees</span><strong>{{ overview.unpaid_consultations_count }}</strong></p>
-    </div>
-  </article>
-  <article class="aes-admin-panel">
-    <div class="aes-admin-panel__head">
-      <span>Securite systeme</span>
-      <a href="{% url 'admin:clinic_common_systemactivity_changelist' %}">Historique</a>
-    </div>
-    <div class="aes-admin-security-grid">
-      <p><span>Connexions echouees aujourd'hui</span><strong>{{ overview.failed_logins_today }}</strong></p>
-      <p><span>Acces sensibles aujourd'hui</span><strong>{{ overview.sensitive_access_today }}</strong></p>
-      <p><span>Sauvegardes</span><strong>{{ overview.backups_count }}</strong></p>
-      <p><span>Parametres</span><strong>{{ overview.settings_count }}</strong></p>
-    </div>
-    <ul class="aes-admin-activity">
-      {% for activity in overview.recent_activities %}
-        <li>
-          <time>{{ activity.created_at|date:"d/m H:i" }}</time>
-          <span>{{ activity.get_action_display }}</span>
-          <strong>{% if activity.actor %}{{ activity.actor.email }}{% else %}Systeme{% endif %}</strong>
-        </li>
-      {% empty %}
-        <li><span>Aucune activite enregistree.</span></li>
-      {% endfor %}
-    </ul>
-  </article>
+    <span>Rendez-vous</span>
+  </a>
 </section>
 
 <section class="aes-admin-cards" aria-label="Raccourcis admin">
@@ -141,9 +87,9 @@
   </article>
   <article class="aes-admin-card">
     <span>Factures</span>
-    <strong>Statut, total, lignes facture, paiements.</strong>
+    <strong>Historique complet : statut, total, medecin, lignes facture et paiements.</strong>
     <div class="aes-admin-card__actions">
-      <a href="{% url 'admin:facturation_facture_changelist' %}">Modifier</a>
+      <a href="{% url 'admin:facturation_facture_changelist' %}">Historique</a>
       <a href="{% url 'admin:facturation_facture_add' %}">Ajouter</a>
     </div>
   </article>

@@ -2,17 +2,13 @@ from django.contrib import admin
 from django.urls import reverse
 from django.utils.html import format_html
 
+from clinic_common.admin_permissions import ClinicDeletePermissionMixin
 from facturation.models import Facture
 from .models import Consultation, DossierPatient, LigneOrdonnance, Ordonnance
 
 
-class NoDeleteAdminMixin:
-    def has_delete_permission(self, request, obj=None):
-        return False
-
-
 @admin.register(DossierPatient)
-class DossierPatientAdmin(NoDeleteAdminMixin, admin.ModelAdmin):
+class DossierPatientAdmin(ClinicDeletePermissionMixin, admin.ModelAdmin):
     list_display = ("num_dossier", "patient_link", "consultations_total", "created_at")
     search_fields = (
         "num_dossier",
@@ -40,16 +36,19 @@ class DossierPatientAdmin(NoDeleteAdminMixin, admin.ModelAdmin):
 
 
 @admin.register(Consultation)
-class ConsultationAdmin(NoDeleteAdminMixin, admin.ModelAdmin):
+class ConsultationAdmin(ClinicDeletePermissionMixin, admin.ModelAdmin):
     list_display = (
         "patient_link",
         "medecin_link",
         "date",
+        "updated_at",
+        "specialite_formulaire_label",
         "termine",
+        "risk_badge",
         "ordonnance_link",
         "facture_link",
     )
-    list_filter = ("termine", "date")
+    list_filter = ("termine", "risk_level", "specialite_snapshot", "date")
     search_fields = (
         "patient__num_dossier",
         "patient__user__email",
@@ -59,11 +58,21 @@ class ConsultationAdmin(NoDeleteAdminMixin, admin.ModelAdmin):
         "medecin__user__first_name",
         "medecin__user__last_name",
         "diagnostic",
+        "symptomes",
+        "maladies_chroniques",
+        "traitement",
         "compte_rendu",
     )
     autocomplete_fields = ("rendez_vous", "medecin", "patient", "dossier")
     date_hierarchy = "date"
-    readonly_fields = ("ordonnance_link", "facture_link")
+    readonly_fields = (
+        "updated_at",
+        "risk_score",
+        "risk_level",
+        "risk_analyzed_at",
+        "ordonnance_link",
+        "facture_link",
+    )
 
     def get_queryset(self, request):
         return super().get_queryset(request).select_related(
@@ -81,6 +90,21 @@ class ConsultationAdmin(NoDeleteAdminMixin, admin.ModelAdmin):
     def medecin_link(self, obj):
         url = reverse("admin:medecins_medecin_change", args=[obj.medecin_id])
         return format_html('<a href="{}">{}</a>', url, obj.medecin)
+
+    @admin.display(description="Risque IA")
+    def risk_badge(self, obj):
+        colors = {
+            Consultation.RiskLevel.FAIBLE: "#2d7d46",
+            Consultation.RiskLevel.MOYEN: "#b7791f",
+            Consultation.RiskLevel.ELEVE: "#c0392b",
+        }
+        color = colors.get(obj.risk_level, "#2d7d46")
+        return format_html(
+            '<strong style="color:{}">{} - {}</strong>',
+            color,
+            obj.risk_score,
+            obj.risk_label,
+        )
 
     @admin.display(description="Ordonnance")
     def ordonnance_link(self, obj):
@@ -106,11 +130,11 @@ class ConsultationAdmin(NoDeleteAdminMixin, admin.ModelAdmin):
 class LigneOrdonnanceInline(admin.TabularInline):
     model = LigneOrdonnance
     extra = 1
-    can_delete = False
+    can_delete = True
 
 
 @admin.register(Ordonnance)
-class OrdonnanceAdmin(NoDeleteAdminMixin, admin.ModelAdmin):
+class OrdonnanceAdmin(ClinicDeletePermissionMixin, admin.ModelAdmin):
     list_display = ("consultation_link", "patient_name", "date", "valide_jusqu")
     search_fields = (
         "consultation__patient__num_dossier",
@@ -135,7 +159,7 @@ class OrdonnanceAdmin(NoDeleteAdminMixin, admin.ModelAdmin):
 
 
 @admin.register(LigneOrdonnance)
-class LigneOrdonnanceAdmin(NoDeleteAdminMixin, admin.ModelAdmin):
+class LigneOrdonnanceAdmin(ClinicDeletePermissionMixin, admin.ModelAdmin):
     list_display = ("ordonnance", "medicament", "dosage")
     search_fields = ("medicament", "dosage", "ordonnance__consultation__patient__num_dossier")
     autocomplete_fields = ("ordonnance",)

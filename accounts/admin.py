@@ -6,8 +6,8 @@ from django.utils.translation import gettext_lazy as _
 from .models import CaissierAccount, InfirmierAccount, User
 
 
-admin.site.site_header = "Aesculia Administration"
-admin.site.site_title = "Aesculia Admin"
+admin.site.site_header = "Clinova Administration"
+admin.site.site_title = "Clinova Admin"
 admin.site.index_title = "Gestion de la clinique"
 
 try:

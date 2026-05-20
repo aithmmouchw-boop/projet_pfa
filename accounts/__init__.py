@@ -1,1 +1,1 @@
-"""Authentification et utilisateurs Aesculia."""
+"""Authentification et utilisateurs CLINOVA."""

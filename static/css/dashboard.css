@@ -204,6 +204,107 @@
   color: var(--text-dark);
 }
 
+.secretary-doctors {
+  padding: 1.15rem;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 8px 28px rgba(28, 43, 30, 0.04);
+}
+
+.secretary-doctors__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.85rem;
+}
+
+.secretary-doctors__head .dash-section-title {
+  margin: 0.1rem 0 0;
+}
+
+.secretary-doctors__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 0.75rem;
+}
+
+.secretary-doctor {
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.85rem 0.95rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: rgba(247, 244, 239, 0.55);
+  transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+}
+
+.secretary-doctor:hover,
+.secretary-doctor.is-active {
+  border-color: rgba(61, 107, 79, 0.45);
+  background: rgba(123, 174, 138, 0.14);
+  transform: translateY(-1px);
+}
+
+.secretary-doctor__name {
+  color: var(--text-dark);
+  font-weight: 700;
+}
+
+.secretary-doctor__spec,
+.secretary-doctor__meta {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
+.constants-card {
+  max-width: 620px;
+}
+
+.constants-card__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.constants-form {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.constants-form p {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0;
+}
+
+.constants-form label {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.dash-input {
+  width: 100%;
+  padding: 0.75rem 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--text-dark);
+  font: inherit;
+}
+
+.dash-input:focus {
+  outline: 2px solid rgba(61, 107, 79, 0.25);
+  border-color: rgba(61, 107, 79, 0.55);
+}
+
 .dash-metrics {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
@@ -377,6 +478,12 @@
   flex-wrap: wrap;
   gap: 0.45rem;
   align-items: center;
+}
+
+.dash-muted {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 600;
 }
 
 .dash-btn--primary {
@@ -811,6 +918,30 @@
   font-weight: 600;
 }
 
+.cashier-line-form {
+  display: none;
+}
+
+.cashier-line-input {
+  width: min(100%, 260px);
+  min-height: 34px;
+  box-sizing: border-box;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0 0.55rem;
+  font: inherit;
+  color: var(--text-dark);
+  background: #fff;
+}
+
+.cashier-line-input--small {
+  width: 72px;
+}
+
+.cashier-line-input--money {
+  width: 120px;
+}
+
 .payment-form p,
 .cashier-adjust p {
   display: flex;
@@ -983,4 +1114,739 @@
   color: inherit;
   text-align: left;
   width: 100%;
+}
+
+/* Clinova patient booking, medical file and AI risk views */
+.booking-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.45rem 1.55rem;
+  border: 1px solid rgba(61, 107, 79, 0.16);
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(237, 245, 239, 0.82)), #fff;
+  box-shadow: 0 16px 46px rgba(28, 43, 30, 0.08);
+}
+
+.booking-head--compact {
+  align-items: flex-start;
+}
+
+.booking-head__eyebrow,
+.medical-intro__eyebrow {
+  display: block;
+  margin-bottom: 0.45rem;
+  color: var(--accent-moss);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.booking-head h2,
+.medical-intro h2,
+.risk-panel h2,
+.clinical-form h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.65rem, 3vw, 2.35rem);
+  font-weight: 400;
+  color: var(--text-dark);
+}
+
+.booking-head p,
+.medical-intro p,
+.risk-panel p,
+.clinical-form__lead {
+  margin: 0.65rem 0 0;
+  color: var(--text-muted);
+  line-height: 1.65;
+}
+
+.doctor-search {
+  display: grid;
+  grid-template-columns: minmax(220px, 1.1fr) minmax(200px, 0.8fr) auto auto;
+  gap: 0.75rem;
+  align-items: end;
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: #fff;
+}
+
+.doctor-search label,
+.clinical-form form p,
+.booking-confirm p {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin: 0;
+}
+
+.doctor-search span,
+.clinical-form label,
+.booking-confirm label {
+  color: var(--text-muted);
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.doctor-search input,
+.doctor-search select,
+.clinical-form input,
+.clinical-form textarea,
+.clinical-form select,
+.booking-confirm textarea,
+.booking-confirm input {
+  width: 100%;
+  min-height: 44px;
+  box-sizing: border-box;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #fbfaf7;
+  color: var(--text-dark);
+  padding: 0 0.85rem;
+  font: inherit;
+}
+
+.clinical-form textarea,
+.booking-confirm textarea {
+  min-height: 100px;
+  padding-top: 0.75rem;
+}
+
+.doctor-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  gap: 1rem;
+  margin-top: 1.2rem;
+}
+
+.doctor-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 390px;
+  overflow: hidden;
+  border: 1px solid rgba(61, 107, 79, 0.16);
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 18px 48px rgba(28, 43, 30, 0.08);
+}
+
+.doctor-card__media {
+  position: relative;
+  height: 180px;
+  background: linear-gradient(135deg, rgba(61, 107, 79, 0.18), rgba(201, 169, 110, 0.14)), #eef3ef;
+}
+
+.doctor-card__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.doctor-card__media--cabinet > img {
+  filter: saturate(0.92);
+}
+
+.doctor-card__media--cabinet::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(28, 43, 30, 0.02), rgba(28, 43, 30, 0.42));
+  pointer-events: none;
+}
+
+.doctor-card__portrait {
+  position: absolute;
+  left: 1rem;
+  bottom: -34px;
+  z-index: 1;
+  width: 86px;
+  height: 86px;
+  border: 4px solid #fff;
+  border-radius: 18px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 12px 28px rgba(28, 43, 30, 0.18);
+}
+
+.doctor-card__portrait img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.doctor-card__avatar,
+.doctor-mini__avatar {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(145deg, #1c2b1e, #3d6b4f 58%, #7bae8a);
+  color: #fff;
+}
+
+.doctor-card__avatar span,
+.doctor-mini__avatar {
+  font-size: 3rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.doctor-card__body {
+  padding: 2.7rem 1.1rem 0;
+}
+
+.doctor-card__specialty {
+  display: inline-flex;
+  padding: 0.32rem 0.65rem;
+  border-radius: 999px;
+  background: rgba(61, 107, 79, 0.1);
+  color: var(--accent-moss);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.doctor-card h3 {
+  margin: 0.85rem 0 0;
+  font-family: var(--font-display);
+  font-size: 1.45rem;
+  font-weight: 400;
+}
+
+.doctor-card p {
+  margin: 0.6rem 0 0;
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+
+.doctor-card__action {
+  margin-top: auto;
+  padding: 1rem 1.1rem 1.1rem;
+}
+
+.doctor-card__action .dash-btn {
+  width: 100%;
+}
+
+.doctor-mini {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.doctor-mini img,
+.doctor-mini__avatar {
+  width: 74px;
+  height: 74px;
+  border-radius: 18px;
+  object-fit: cover;
+  flex: 0 0 auto;
+}
+
+.doctor-mini__avatar {
+  font-size: 1.35rem;
+}
+
+.slot-day {
+  margin-top: 1.25rem;
+}
+
+.slot-day h3 {
+  margin: 0 0 0.7rem;
+  font-family: var(--font-display);
+  font-weight: 400;
+}
+
+.slot-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.slot-btn {
+  min-height: 42px;
+  padding: 0 1rem;
+  border: 1px solid rgba(61, 107, 79, 0.25);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--accent-moss);
+  font-weight: 800;
+}
+
+.slot-btn:hover {
+  background: var(--accent-moss);
+  color: #fff;
+}
+
+.slot-btn--busy,
+.slot-btn--busy:hover {
+  cursor: not-allowed;
+  border-color: rgba(192, 57, 43, 0.32);
+  background: rgba(192, 57, 43, 0.12);
+  color: #a83226;
+}
+
+.slot-btn--busy span {
+  display: block;
+  margin-top: 0.1rem;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.medical-intro,
+.risk-panel {
+  padding: 1.5rem;
+  border: 1px solid rgba(61, 107, 79, 0.16);
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(237, 245, 239, 0.82)), #fff;
+  box-shadow: 0 16px 46px rgba(28, 43, 30, 0.08);
+}
+
+.medical-intro__grid,
+.patient-file-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.medical-intro__grid article {
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.medical-intro__grid h3,
+.medical-event h3,
+.clinical-form h3 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+}
+
+.patient-file-grid {
+  margin-top: 1rem;
+}
+
+.risk-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 0.35fr);
+  gap: 1rem;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.risk-score-card {
+  padding: 1rem;
+  border-radius: 16px;
+  background: #fff;
+  border: 1px solid var(--border);
+}
+
+.risk-score-card strong {
+  display: block;
+  color: var(--text-dark);
+  font-size: 3rem;
+  line-height: 1;
+}
+
+.risk-score-card span {
+  display: block;
+  margin-top: 0.35rem;
+  color: var(--text-muted);
+  font-weight: 700;
+}
+
+.risk-meter {
+  height: 10px;
+  margin-top: 0.85rem;
+  border-radius: 999px;
+  background: rgba(107, 123, 110, 0.15);
+  overflow: hidden;
+}
+
+.risk-meter i {
+  display: block;
+  width: var(--risk);
+  height: 100%;
+  border-radius: inherit;
+  background: #2d7d46;
+}
+
+.risk-panel--moyen .risk-meter i {
+  background: #d98b1f;
+}
+
+.risk-panel--eleve .risk-meter i {
+  background: #c0392b;
+}
+
+.risk-breakdown {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.85rem;
+  margin-top: 1rem;
+}
+
+.risk-breakdown article {
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: #fff;
+}
+
+.risk-breakdown strong {
+  display: block;
+  margin-top: 0.45rem;
+  font-size: 1.65rem;
+}
+
+.risk-breakdown p {
+  margin: 0.2rem 0 0;
+  color: var(--text-muted);
+}
+
+.risk-dot {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #2d7d46;
+}
+
+.risk-dot--moyen {
+  background: #d98b1f;
+}
+
+.risk-dot--eleve {
+  background: #c0392b;
+}
+
+.risk-chart-panel {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.45fr) minmax(0, 1fr);
+  gap: 1rem;
+  align-items: center;
+  margin-top: 1rem;
+  padding: 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 12px 36px rgba(28, 43, 30, 0.06);
+}
+
+.risk-chart-panel h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+}
+
+.risk-chart-panel p {
+  margin: 0.55rem 0 0;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.risk-chart {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.risk-chart__item {
+  display: grid;
+  grid-template-columns: 48px 1fr 44px;
+  gap: 0.65rem;
+  align-items: center;
+  font-size: 0.82rem;
+}
+
+.risk-chart__track {
+  height: 12px;
+  border-radius: 999px;
+  background: rgba(107, 123, 110, 0.13);
+  overflow: hidden;
+}
+
+.risk-chart__bar {
+  display: block;
+  width: var(--risk);
+  height: 100%;
+  border-radius: inherit;
+  background: #2d7d46;
+}
+
+.risk-chart__bar--moyen {
+  background: #d98b1f;
+}
+
+.risk-chart__bar--eleve {
+  background: #c0392b;
+}
+
+.risk-pill {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  padding: 0.3rem 0.6rem;
+  border-radius: 999px;
+  background: rgba(45, 125, 70, 0.12);
+  color: #2d7d46;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.risk-pill--moyen {
+  background: rgba(217, 139, 31, 0.14);
+  color: #9a5d0c;
+}
+
+.risk-pill--eleve {
+  background: rgba(192, 57, 43, 0.12);
+  color: #c0392b;
+}
+
+.medical-timeline {
+  display: grid;
+  gap: 1rem;
+}
+
+.medical-event {
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: #fff;
+}
+
+.medical-event__top {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.medical-event time {
+  display: block;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.medical-event dl {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.65rem;
+  margin: 1rem 0;
+}
+
+.medical-event dl div {
+  padding: 0.7rem;
+  border-radius: 10px;
+  background: #fbfaf7;
+}
+
+.medical-event dt {
+  color: var(--text-muted);
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.medical-event dd {
+  margin: 0.2rem 0 0;
+  font-weight: 700;
+}
+
+.medical-prescription {
+  margin-top: 0.9rem;
+  padding: 0.85rem;
+  border-radius: 12px;
+  background: rgba(61, 107, 79, 0.07);
+}
+
+.clinical-layout {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.75fr) minmax(0, 1.25fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+.clinical-side {
+  display: grid;
+  gap: 1rem;
+}
+
+.clinical-side hr {
+  border: 0;
+  border-top: 1px solid var(--border);
+  margin: 1rem 0;
+}
+
+.clinical-history {
+  margin: 0.8rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.55rem;
+}
+
+.clinical-history li {
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  gap: 0.5rem;
+  align-items: center;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+}
+
+.clinical-form form {
+  display: grid;
+  gap: 0.8rem;
+  margin-top: 1rem;
+}
+
+.clinical-question-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.75rem;
+}
+
+.clinical-question {
+  min-width: 0;
+  margin: 0;
+  padding: 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #fbfaf7;
+}
+
+.clinical-question legend {
+  padding: 0 0.25rem;
+  color: var(--text-muted);
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.clinical-question > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 0.65rem;
+}
+
+.clinical-question > div > div {
+  min-width: 82px;
+}
+
+.clinical-question label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 34px;
+  padding: 0 0.65rem;
+  border: 1px solid rgba(61, 107, 79, 0.18);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--text-dark);
+  font-size: 0.84rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.clinical-question input[type="radio"] {
+  width: auto;
+  min-height: 0;
+  margin: 0;
+  accent-color: var(--accent-moss);
+}
+
+.clinical-field-error,
+.clinical-form .errorlist {
+  margin: 0.45rem 0 0;
+  padding-left: 1rem;
+  color: #c0392b;
+  font-size: 0.78rem;
+}
+
+.prescription-row {
+  padding: 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: #fbfaf7;
+}
+
+.prescription-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+
+.prescription-grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.prescription-grid__wide {
+  grid-column: 1 / -1;
+}
+
+.prescription-delete {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-top: 0.75rem;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.prescription-delete input[type="checkbox"] {
+  width: 18px;
+  min-height: 18px;
+  accent-color: var(--accent-moss);
+}
+
+.patient-invoice {
+  max-width: 860px;
+}
+
+@media (max-width: 900px) {
+  .doctor-search,
+  .medical-intro__grid,
+  .patient-file-grid,
+  .risk-panel,
+  .risk-breakdown,
+  .risk-chart-panel,
+  .clinical-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .prescription-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .booking-head,
+  .medical-event__top {
+    flex-direction: column;
+  }
+
+  .medical-event dl {
+    grid-template-columns: 1fr;
+  }
 }

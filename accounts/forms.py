@@ -8,6 +8,7 @@ from django.core.exceptions import ValidationError
 from django.db import transaction
 from django import forms
 
+from clinic_common.clinical_specialties import SPECIALTY_CHOICES
 from medecins.models import Medecin
 from patients.models import Patient
 from patients.utils import generer_num_dossier
@@ -18,8 +19,6 @@ from .models import User
 ROLE_CHOICES_INSCRIPTION = [
     ("patient", "Patient"),
     ("medecin", "Medecin"),
-    ("infirmier", "Secretaire"),
-    ("caissier", "Caissier"),
 ]
 
 
@@ -148,14 +147,13 @@ class AesculiaSignupForm(forms.Form):
             }
         ),
     )
-    specialite = forms.CharField(
+    specialite = forms.ChoiceField(
         label="Specialite",
-        max_length=100,
+        choices=(("", "Choisir une specialite"),) + SPECIALTY_CHOICES,
         required=False,
-        widget=forms.TextInput(
+        widget=forms.Select(
             attrs={
-                "placeholder": "Ex. Medecine generale",
-                "class": "auth-input-native",
+                "class": "auth-input-native auth-select-native",
             }
         ),
     )

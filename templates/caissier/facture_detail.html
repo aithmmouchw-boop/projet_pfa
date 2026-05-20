@@ -1,4 +1,5 @@
 {% extends "dashboards/base_dashboard.html" %}
+{% load l10n %}
 {% block dash_main %}
 <section class="cashier-file">
   <div class="cashier-file__head">
@@ -31,15 +32,32 @@
     </div>
     <div class="dash-table-wrap">
       <table class="dash-table">
-        <thead><tr><th>Libelle</th><th>Qte</th><th>P.U.</th><th>Total ligne</th></tr></thead>
+        <thead><tr><th>Libelle</th><th>Qte</th><th>P.U.</th><th>Total ligne</th><th>Actions</th></tr></thead>
         <tbody>
           {% for l in facture.lignes.all %}
             <tr>
-              <td>{{ l.libelle }}</td>
-              <td>{{ l.quantite }}</td>
-              <td>{{ l.prix_unitaire|floatformat:2 }} DH</td>
+              <td>
+                <form id="ligne-update-{{ l.pk }}" method="post" class="cashier-line-form">
+                  {% csrf_token %}
+                  <input type="hidden" name="update_ligne" value="1">
+                  <input type="hidden" name="ligne_id" value="{{ l.pk }}">
+                </form>
+                <input form="ligne-update-{{ l.pk }}" class="cashier-line-input" type="text" name="libelle" value="{{ l.libelle }}">
+              </td>
+              <td><input form="ligne-update-{{ l.pk }}" class="cashier-line-input cashier-line-input--small" type="number" name="quantite" value="{{ l.quantite }}" min="1" step="1"></td>
+              <td><input form="ligne-update-{{ l.pk }}" class="cashier-line-input cashier-line-input--money" type="number" name="prix_unitaire" value="{{ l.prix_unitaire|unlocalize }}" step="0.01"></td>
               <td>{{ l.montant_ligne|floatformat:2 }} DH</td>
+              <td class="dash-actions-cell">
+                <button form="ligne-update-{{ l.pk }}" type="submit" class="dash-btn dash-btn--ghost dash-btn--compact">Modifier</button>
+                <form method="post" style="display:inline;">{% csrf_token %}
+                  <input type="hidden" name="delete_ligne" value="1">
+                  <input type="hidden" name="ligne_id" value="{{ l.pk }}">
+                  <button type="submit" class="dash-btn dash-btn--ghost dash-btn--compact">Supprimer</button>
+                </form>
+              </td>
             </tr>
+          {% empty %}
+            <tr><td colspan="5">Aucune ligne de facture.</td></tr>
           {% endfor %}
         </tbody>
       </table>

@@ -31,7 +31,8 @@ def admin_overview_stats():
             "consultations_done_count": Consultation.objects.filter(termine=True).count(),
             "payments_count": valid_payments.count(),
             "users_count": User.objects.count(),
-            "doctors_count": Medecin.objects.filter(actif=True).count(),
+            "doctors_count": Medecin.objects.count(),
+            "factures_count": Facture.objects.count(),
             "paid_consultations_count": Facture.objects.filter(statut=Facture.Statut.PAYEE).count(),
             "unpaid_consultations_count": Facture.objects.filter(
                 statut__in=[Facture.Statut.BROUILLON, Facture.Statut.EMISE]
@@ -59,6 +60,7 @@ def admin_overview_stats():
             "payments_count": 0,
             "users_count": 0,
             "doctors_count": 0,
+            "factures_count": 0,
             "paid_consultations_count": 0,
             "unpaid_consultations_count": 0,
             "revenue_today": Decimal("0.00"),

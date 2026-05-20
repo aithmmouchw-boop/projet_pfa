@@ -3,10 +3,10 @@
 
 {% block title %}{{ clinic.name }} — {{ clinic.tagline|default:"Là où la médecine rencontre l'excellence." }}{% endblock %}
 
-{% block meta_description %}Aesculia — Clinique privée d'excellence. Médecins certifiés, soins personnalisés, prise de RDV en ligne.{% endblock %}
+{% block meta_description %}Clinova - Clinique privee d'excellence. Medecins certifies, soins personnalises, prise de RDV en ligne.{% endblock %}
 
 {% block og_meta %}
-<meta property="og:title" content="AESCULIA">
+<meta property="og:title" content="CLINOVA">
 <meta property="og:description" content="Là où la médecine rencontre l'excellence.">
 <meta property="og:type" content="website">
 {% endblock %}
@@ -14,7 +14,7 @@
 {% block body_class %}aesculia aesculia--ivory{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/landing.css' %}">
+<link rel="stylesheet" href="{% static 'css/landing.css' %}?v=faq-green-20260519">
 {% endblock %}
 
 {% block content %}
@@ -30,7 +30,7 @@
           <circle cx="16" cy="16" r="2" fill="currentColor"/>
         </svg>
       </span>
-      <span class="aes-brand__word">{{ clinic.name|default:"AESCULIA" }}</span>
+      <span class="aes-brand__word">{{ clinic.name|default:"CLINOVA" }}</span>
     </a>
 
     <button type="button" class="aes-nav-toggle" id="aes-nav-toggle" aria-expanded="false" aria-controls="aes-nav-overlay" aria-label="Ouvrir le menu">
@@ -102,7 +102,7 @@
         <p class="aes-hero__tag2">{{ clinic.subtagline }}</p>
         <div class="aes-hero__ctas">
           <a class="aes-btn aes-btn--moss" href="{% url 'patients:rdv_nouveau' %}">Prendre Rendez-vous</a>
-          <a class="aes-btn aes-btn--outline" href="#soins">Découvrir Aesculia</a>
+          <a class="aes-btn aes-btn--outline" href="#soins">Decouvrir Clinova</a>
         </div>
         <div class="aes-hero__trust" role="list">
           <span role="listitem"><span class="aes-hero__star" aria-hidden="true">✦</span> Médecins certifiés</span>
@@ -126,8 +126,8 @@
           <p class="aes-hero__card-label">Votre prochain rendez-vous</p>
           {% if featured_doctor %}
           <div class="aes-hero__card-avatar">
-            {% if featured_doctor.photo %}
-            <img src="{{ featured_doctor.photo.url }}" alt="" width="50" height="50" loading="eager" decoding="async" onerror="this.style.display='none'">
+            {% if featured_doctor.photo_url %}
+            <img src="{{ featured_doctor.photo_url }}" alt="" width="50" height="50" loading="eager" decoding="async" onerror="this.style.display='none'">
             {% else %}
             <span class="aes-hero__card-initials">{{ featured_doctor.initials|default:"AE" }}</span>
             {% endif %}
@@ -316,8 +316,8 @@
       {% for medecin in doctors %}
       <article class="aes-doc">
         <div class="aes-doc__visual">
-          {% if medecin.photo %}
-          <img class="aes-doc__img" src="{{ medecin.photo.url }}" alt="" width="640" height="480" loading="lazy" decoding="async" onerror="this.style.display='none'">
+          {% if medecin.photo_url %}
+          <img class="aes-doc__img" src="{{ medecin.photo_url }}" alt="{{ medecin.nom }}" width="640" height="480" loading="lazy" decoding="async" onerror="this.style.display='none'">
           {% else %}
           <div class="aes-doc__ph doctor-photo-placeholder">
             <span class="doctor-initials">{{ medecin.initials|default:medecin.nom|slice:":2"|upper }}</span>
@@ -452,9 +452,9 @@
   <section class="aes-about about-section" id="a-propos" aria-labelledby="aes-about-h2" data-reveal>
     <div class="about-inner">
       <div class="about-text">
-        <span class="section-tag">À propos d'Aesculia</span>
+        <span class="section-tag">A propos de Clinova</span>
         <h2 id="aes-about-h2" class="about-heading">Une clinique fondée sur<br>l'humain avant tout.</h2>
-        <p>Depuis {{ stats.years }} ans, Aesculia réunit les meilleurs praticiens autour d'une conviction commune : chaque patient mérite une écoute totale, un diagnostic précis, et un accompagnement sur mesure.</p>
+        <p>Depuis {{ stats.years }} ans, Clinova reunit les meilleurs praticiens autour d'une conviction commune : chaque patient merite une ecoute totale, un diagnostic precis, et un accompagnement sur mesure.</p>
         <p>Notre approche conjugue rigueur médicale et chaleur humaine, dans un cadre pensé pour votre sérénité.</p>
         <a href="#philosophie" class="aes-btn aes-btn--moss about-cta">Notre histoire <span aria-hidden="true">→</span></a>
       </div>
@@ -471,7 +471,7 @@
     <div class="aes-cta__bg" data-parallax="cta-bg" style="background-image: url('https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=1920&q=85');"></div>
     <div class="aes-cta__veil" aria-hidden="true"></div>
     <div class="aes-cta__content">
-      <p class="aes-cta__tag">Rejoignez Aesculia</p>
+      <p class="aes-cta__tag">Rejoignez Clinova</p>
       <h2 id="aes-cta-h2" class="aes-cta__h2">Votre santé mérite<br>ce qu'il y a de mieux.</h2>
       <p class="aes-cta__sub">Rejoignez les <strong>{{ stats.patients_count|default:0 }}+</strong> patients qui nous font confiance.</p>
       <a class="aes-btn aes-btn--moss aes-btn--xl aes-btn--pulse" href="{% url 'patients:rdv_nouveau' %}">Réserver ma consultation</a>
@@ -486,7 +486,7 @@
         <span class="aes-footer__mark" aria-hidden="true">
           <svg width="28" height="28" viewBox="0 0 32 32" fill="none"><path d="M16 4v24M10 8c0 4 3 6 6 6s6-2 6-6M10 24c0-4 3-6 6-6s6 2 6 6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><circle cx="16" cy="16" r="2" fill="currentColor"/></svg>
         </span>
-        <span class="aes-footer__word">{{ clinic.name|default:"AESCULIA" }}</span>
+        <span class="aes-footer__word">{{ clinic.name|default:"CLINOVA" }}</span>
       </div>
       <p class="aes-footer__stmt">{{ clinic.tagline }}</p>
       <p class="aes-footer__stmt2">{{ clinic.subtagline }}</p>
@@ -532,7 +532,7 @@
     </div>
   </div>
   <div class="aes-footer__bar">
-    <span>© {% now "Y" %} {{ clinic.name|default:"AESCULIA" }}. Tous droits réservés.</span>
+    <span>© {% now "Y" %} {{ clinic.name|default:"CLINOVA" }}. Tous droits reserves.</span>
     <span>Propulsé par {{ system_name|default:"Clinic OS" }}</span>
   </div>
 </footer>
